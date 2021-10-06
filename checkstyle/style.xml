@@ -202,7 +202,9 @@
       <property name="option" value="bottom"/>
     </module>
 
+    <!--
     <module name="MethodParamPad"/>
+    -->
 
     <module name="ParenPad"/>
 
