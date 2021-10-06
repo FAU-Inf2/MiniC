@@ -8,33 +8,35 @@ global_decl
   ;
 
 var_decl
-  : type IDENTIFIER SEMICOLON
+  : type_name IDENTIFIER SEMICOLON
   ;
 
 func_decl
-  : ( type | VOID ) IDENTIFIER LPAREN ( param_decl_list )? RPAREN block
+  : type_name IDENTIFIER LPAREN param_decl_list RPAREN block
+  ;
+
+param_decl_list
+  : ( param_decl ( COMMA param_decl )* )?
+  ;
+
+param_decl
+  : type_name IDENTIFIER
   ;
 
 block
-  : LBRACE ( var_decl )* ( stmt )* RBRACE
+  : LBRACE ( stmt )* RBRACE
   ;
 
 stmt
   : IDENTIFIER ASSIGN expr SEMICOLON
   | IF LPAREN expr RPAREN block ( ELSE block )?
   | RETURN ( expr )? SEMICOLON
+  | var_decl
   ;
 
-param_decl_list
-  : param_decl ( COMMA param_decl )*
-  ;
-
-param_decl
-  : type IDENTIFIER
-  ;
-
-type
+type_name
   : INT
+  | VOID
   ;
 
 expr
