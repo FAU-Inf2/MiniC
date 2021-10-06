@@ -1,0 +1,126 @@
+program
+  : ( global_decl )* EOF
+  ;
+
+global_decl
+  : var_decl
+  | func_decl
+  ;
+
+var_decl
+  : type IDENTIFIER SEMICOLON
+  ;
+
+func_decl
+  : ( type | VOID ) IDENTIFIER LPAREN ( param_decl_list )? RPAREN block
+  ;
+
+block
+  : LBRACE ( var_decl )* ( stmt )* RBRACE
+  ;
+
+stmt
+  : IDENTIFIER ASSIGN expr SEMICOLON
+  | IF LPAREN expr RPAREN block ( ELSE block )?
+  | RETURN ( expr )? SEMICOLON
+  ;
+
+param_decl_list
+  : param_decl ( COMMA param_decl )*
+  ;
+
+param_decl
+  : type IDENTIFIER
+  ;
+
+type
+  : INT
+  ;
+
+expr
+  : or_expr
+  ;
+
+or_expr
+  : and_expr ( OR_OP and_expr )*
+  ;
+
+and_expr
+  : comp_expr ( AND_OP comp_expr )*
+  ;
+
+comp_expr
+  : add_expr ( comp_op add_expr )*
+  ;
+
+add_expr
+  : mul_expr ( add_op mul_expr )*
+  ;
+
+mul_expr
+  : factor ( mul_op factor )*
+  ;
+
+factor
+  : func_call
+  | NUM
+  | IDENTIFIER
+  | LPAREN expr RPAREN
+  ;
+
+func_call
+  : IDENTIFIER LPAREN ( argument_list )? RPAREN
+  ;
+
+argument_list
+  : expr ( COMMA expr )*
+  ;
+
+comp_op
+  : EQUALS | LESS_THAN | GREATER_THAN | LESS_EQUALS | GREATER_EQUALS | NOT_EQUALS
+  ;
+
+add_op
+  : ADD | SUB
+  ;
+
+mul_op
+  : MUL | DIV
+  ;
+
+@skip
+SPACE: ( ' ' | '\n' | '\r' | '\t' )+ ;
+
+VOID: 'void' ;
+INT: 'int' ;
+IF: 'if' ;
+ELSE: 'else' ;
+RETURN: 'return' ;
+SEMICOLON: ';' ;
+ASSIGN: '=' ;
+EQUALS: '==' ;
+LESS_THAN: '<' ;
+GREATER_THAN: '>' ;
+LESS_EQUALS: '<=' ;
+GREATER_EQUALS: '>=' ;
+NOT_EQUALS: '!=' ;
+COMMA: ',' ;
+LPAREN: '(' ;
+RPAREN: ')' ;
+LBRACE: '{' ;
+RBRACE: '}' ;
+OR_OP: '||' ;
+AND_OP: '&&' ;
+ADD: '+' ;
+SUB: '-' ;
+MUL: '*' ;
+DIV: '/' ;
+
+NUM: '0' | ( [1-9][0-9]* ) ;
+IDENTIFIER: [a-zA-Z] [a-zA-Z0-9_]* ;
+
+@skip
+LINE_COMMENT: '//' [^\r\n]* ;
+
+@skip
+BLOCK_COMMENT: '/*' ( [^*]* '*'+ ) ( [^*/] [^*]* '*'+ )* '/' ;
