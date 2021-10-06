@@ -1,0 +1,42 @@
+apply plugin: 'java'
+apply plugin: 'application'
+apply plugin: 'checkstyle'
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+mainClassName = "i2.act.examples.minic.MiniC"
+
+repositories {
+  mavenCentral()
+}
+
+dependencies {
+}
+
+jar {
+  manifest {
+    attributes "Main-Class": "$mainClassName"
+  }
+
+  from {
+    configurations.compileClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+  }
+}
+
+checkstyle {
+  toolVersion = "7.6.1"
+  configFile = new File(rootDir, "checkstyle/style.xml")
+  ignoreFailures = false
+}
+checkstyleMain.source="src/main"
+checkstyleTest.source="src/test"
+
+compileJava {
+  options.compilerArgs << "-Xlint:unchecked" << "-Xlint:deprecation"
+}
+compileJava.finalizedBy(jar)
+
+compileTestJava {
+  options.compilerArgs << "-Xlint:unchecked" << "-Xlint:deprecation"
+}
