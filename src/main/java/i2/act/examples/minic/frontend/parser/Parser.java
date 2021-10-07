@@ -20,7 +20,7 @@ public final class Parser {
 
   private static final Program parseProgram(final Lexer lexer) {
     // program
-    //   : ( global_decl )* EOF
+    //   : ( global_declaration )* EOF
     //   ;
 
     final SourcePosition position = lexer.getPosition();
@@ -36,9 +36,9 @@ public final class Parser {
   }
 
   private static final Declaration parseGlobaleDeclaration(final Lexer lexer) {
-    // global_decl
+    // global_declaration
     //   : type_name IDENTIFIER SEMICOLON
-    //   | type_name IDENTIFIER func_decl_part
+    //   | type_name IDENTIFIER function_declaration_part
     //   ;
 
     final SourcePosition position = lexer.getPosition();
@@ -61,8 +61,8 @@ public final class Parser {
 
   private static final FunctionDeclaration parseFunctionDeclarationPart(final Lexer lexer,
       final SourcePosition position, final TypeName typeName, final Identifier name) {
-    // func_decl_part
-    //   : LPAREN param_decl_list RPAREN block
+    // function_declaration_part
+    //   : LPAREN parameter_declaration_list RPAREN block
     //   ;
 
     lexer.assertPop(TokenKind.TK_LPAREN);
@@ -77,8 +77,8 @@ public final class Parser {
   }
 
   private static final List<VariableDeclaration> parseParameterDeclarationList(final Lexer lexer) {
-    // param_decl_list
-    //   : ( param_decl ( COMMA param_decl )* )?
+    // parameter_declaration_list
+    //   : ( parameter_declaration ( COMMA parameter_declaration )* )?
     //   ;
 
     final List<VariableDeclaration> parameters = new ArrayList<>();
@@ -102,7 +102,7 @@ public final class Parser {
   }
 
   private static final VariableDeclaration parseParameterDeclaration(final Lexer lexer) {
-    // param_decl
+    // parameter_declaration
     //   : type_name IDENTIFIER
     //   ;
 
@@ -115,7 +115,7 @@ public final class Parser {
   }
 
   private static final VariableDeclaration parseVariableDeclaration(final Lexer lexer) {
-    // var_decl
+    // variable_declaration
     //   : type_name IDENTIFIER SEMICOLON
     //   ;
 
@@ -153,7 +153,7 @@ public final class Parser {
 
   private static final Block parseBlock(final Lexer lexer) {
     // block
-    //   : LBRACE ( stmt )* RBRACE
+    //   : LBRACE ( statement )* RBRACE
     //   ;
 
     final SourcePosition position = lexer.getPosition();
@@ -173,11 +173,11 @@ public final class Parser {
   }
 
   private static final Statement parseStatement(final Lexer lexer) {
-    // stmt
-    //   : IDENTIFIER ASSIGN expr SEMICOLON
-    //   | IF LPAREN expr RPAREN block ( ELSE block )?
-    //   | RETURN ( expr )? SEMICOLON
-    //   | var_decl
+    // statement
+    //   : IDENTIFIER ASSIGN expression SEMICOLON
+    //   | IF LPAREN expression RPAREN block ( ELSE block )?
+    //   | RETURN ( expression )? SEMICOLON
+    //   | variable_declaration
     //   ;
 
     final SourcePosition position = lexer.getPosition();
@@ -232,8 +232,8 @@ public final class Parser {
   }
 
   private static final Expression parseExpression(final Lexer lexer) {
-    // expr
-    //   : or_expr
+    // expression
+    //   : or_expression
     //   ;
 
     return parseOrExpression(lexer);
@@ -261,8 +261,8 @@ public final class Parser {
   }
 
   private static final Expression parseOrExpression(final Lexer lexer) {
-    // or_expr
-    //   : and_expr ( OR_OP and_expr )*
+    // or_expression
+    //   : and_expression ( OR_OP and_expression )*
     //   ;
 
     return parseBinaryExpression(
@@ -272,8 +272,8 @@ public final class Parser {
   }
 
   private static final Expression parseAndExpression(final Lexer lexer) {
-    // and_expr
-    //   : comp_expr ( AND_OP comp_expr )*
+    // and_expression
+    //   : compare_expression ( AND_OP compare_expression )*
     //   ;
 
     return parseBinaryExpression(
@@ -283,10 +283,10 @@ public final class Parser {
   }
 
   private static final Expression parseCompareExpression(final Lexer lexer) {
-    // comp_expr
-    //   : add_expr ( comp_op add_expr )*
+    // compare_expression
+    //   : add_expression ( compare_operator add_expression )*
     //   ;
-    // comp_op
+    // compare_operator
     //   : EQUALS | LESS_THAN | GREATER_THAN | LESS_EQUALS | GREATER_EQUALS | NOT_EQUALS
     //   ;
 
@@ -298,10 +298,10 @@ public final class Parser {
   }
 
   private static final Expression parseAddExpression(final Lexer lexer) {
-    // add_expr
-    //   : mul_expr ( add_op mul_expr )*
+    // add_expression
+    //   : mul_expression ( add_operator mul_expression )*
     //   ;
-    // add_op
+    // add_operator
     //   : ADD | SUB
     //   ;
 
@@ -312,10 +312,10 @@ public final class Parser {
   }
 
   private static final Expression parseMulExpression(final Lexer lexer) {
-    // mul_expr
-    //   : factor ( mul_op factor )*
+    // mul_expression
+    //   : factor ( mul_operator factor )*
     //   ;
-    // mul_op
+    // mul_operator
     //   : MUL | DIV
     //   ;
 
@@ -327,10 +327,10 @@ public final class Parser {
 
   private static final Expression parseFactor(final Lexer lexer) {
     // factor
-    //   : func_call
-    //   | NUM
+    //   : IDENTIFIER function_call_part
     //   | IDENTIFIER
-    //   | LPAREN expr RPAREN
+    //   | NUM
+    //   | LPAREN expression RPAREN
     //   ;
 
     final SourcePosition position = lexer.getPosition();
@@ -362,7 +362,7 @@ public final class Parser {
 
   private static final FunctionCall parseFunctionCallPart(final Lexer lexer,
       final SourcePosition position, final Identifier callee) {
-    // func_call_part
+    // function_call_part
     //   : LPAREN argument_list RPAREN
     //   ;
 
@@ -377,7 +377,7 @@ public final class Parser {
 
   private static final List<Expression> parseArgumentList(final Lexer lexer) {
     // argument_list
-    //   : ( expr ( COMMA expr )* )?
+    //   : ( expression ( COMMA expression )* )?
     //   ;
 
     final List<Expression> arguments = new ArrayList<>();

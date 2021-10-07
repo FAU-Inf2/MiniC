@@ -1,37 +1,37 @@
 program
-  : ( global_decl )* EOF
+  : ( global_declaration )* EOF
   ;
 
-global_decl
-  : var_decl
-  | func_decl
+global_declaration
+  : variable_declaration
+  | function_declaration
   ;
 
-var_decl
+variable_declaration
   : type_name IDENTIFIER SEMICOLON
   ;
 
-func_decl
-  : type_name IDENTIFIER LPAREN param_decl_list RPAREN block
+function_declaration
+  : type_name IDENTIFIER LPAREN parameter_declaration_list RPAREN block
   ;
 
-param_decl_list
-  : ( param_decl ( COMMA param_decl )* )?
+parameter_declaration_list
+  : ( parameter_declaration ( COMMA parameter_declaration )* )?
   ;
 
-param_decl
+parameter_declaration
   : type_name IDENTIFIER
   ;
 
 block
-  : LBRACE ( stmt )* RBRACE
+  : LBRACE ( statement )* RBRACE
   ;
 
-stmt
-  : IDENTIFIER ASSIGN expr SEMICOLON
-  | IF LPAREN expr RPAREN block ( ELSE block )?
-  | RETURN ( expr )? SEMICOLON
-  | var_decl
+statement
+  : IDENTIFIER ASSIGN expression SEMICOLON
+  | IF LPAREN expression RPAREN block ( ELSE block )?
+  | RETURN ( expression )? SEMICOLON
+  | variable_declaration
   ;
 
 type_name
@@ -39,55 +39,55 @@ type_name
   | VOID
   ;
 
-expr
-  : or_expr
+expression
+  : or_expression
   ;
 
-or_expr
-  : and_expr ( OR_OP and_expr )*
+or_expression
+  : and_expression ( OR_OP and_expression )*
   ;
 
-and_expr
-  : comp_expr ( AND_OP comp_expr )*
+and_expression
+  : compare_expression ( AND_OP compare_expression )*
   ;
 
-comp_expr
-  : add_expr ( comp_op add_expr )*
+compare_expression
+  : add_expression ( compare_operator add_expression )*
   ;
 
-add_expr
-  : mul_expr ( add_op mul_expr )*
+compare_operator
+  : EQUALS | LESS_THAN | GREATER_THAN | LESS_EQUALS | GREATER_EQUALS | NOT_EQUALS
   ;
 
-mul_expr
-  : factor ( mul_op factor )*
+add_expression
+  : mul_expression ( add_operator mul_expression )*
+  ;
+
+add_operator
+  : ADD | SUB
+  ;
+
+mul_expression
+  : factor ( mul_operator factor )*
+  ;
+
+mul_operator
+  : MUL | DIV
   ;
 
 factor
-  : func_call
+  : function_call
   | NUM
   | IDENTIFIER
-  | LPAREN expr RPAREN
+  | LPAREN expression RPAREN
   ;
 
-func_call
+function_call
   : IDENTIFIER LPAREN ( argument_list )? RPAREN
   ;
 
 argument_list
-  : expr ( COMMA expr )*
-  ;
-
-comp_op
-  : EQUALS | LESS_THAN | GREATER_THAN | LESS_EQUALS | GREATER_EQUALS | NOT_EQUALS
-  ;
-
-add_op
-  : ADD | SUB
-  ;
-
-mul_op
-  : MUL | DIV
+  : expression ( COMMA expression )*
   ;
 
 @skip
