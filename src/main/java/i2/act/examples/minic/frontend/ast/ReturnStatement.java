@@ -7,6 +7,10 @@ public final class ReturnStatement extends Statement {
 
   private final Expression returnValue;
 
+  public ReturnStatement(final SourcePosition position) {
+    this(position, null);
+  }
+
   public ReturnStatement(final SourcePosition position, final Expression returnValue) {
     super(position);
     this.returnValue = returnValue;
