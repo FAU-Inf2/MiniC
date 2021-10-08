@@ -282,7 +282,11 @@ public final class Lexer {
             if ((firstChar >= 'A' && firstChar <= 'Z')
                 || (firstChar >= 'a' && firstChar <= 'z')
                 || (firstChar == '_')) {
-              matches = (c -> ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || c == '_'));
+              matches = (c -> (
+                  (c >= 'A' && c <= 'Z')
+                  || (c >= 'a' && c <= 'z')
+                  || (c == '_')
+                  || (c >= '0' && c <= '9')));
             } else {
               throw InvalidProgramException.lexicallyInvalid(getPosition(),
                   String.format("invalid character '%c'", firstChar));
