@@ -227,7 +227,7 @@ public final class Lexer {
         }
         case '&': {
           return new Token(
-              checkNextCharacter('|', TokenKind.TK_AND_OP, null),
+              checkNextCharacter('&', TokenKind.TK_AND_OP, null),
               begin);
         }
         case ',': {
