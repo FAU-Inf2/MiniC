@@ -4,6 +4,7 @@ import i2.act.examples.minic.errors.InvalidProgramException;
 import i2.act.examples.minic.frontend.ast.Program;
 import i2.act.examples.minic.frontend.ast.visitors.DotGenerator;
 import i2.act.examples.minic.frontend.parser.Parser;
+import i2.act.examples.minic.frontend.semantics.SemanticAnalysis;
 import i2.act.util.FileUtil;
 import i2.act.util.SafeWriter;
 import i2.act.util.options.ProgramArguments;
@@ -47,6 +48,8 @@ public final class MiniC {
         DotGenerator.printDot(program, writer);
         writer.flush();
       }
+
+      SemanticAnalysis.analyze(program);
     } catch (final InvalidProgramException exception) {
       System.err.format("%s: %s\n", exception.getKind(), exception.getMessage());
       System.exit(exception.getExitCode());
