@@ -5,10 +5,14 @@ import i2.act.examples.minic.frontend.ast.Program;
 import i2.act.examples.minic.frontend.ast.visitors.DotGenerator;
 import i2.act.examples.minic.frontend.parser.Parser;
 import i2.act.examples.minic.frontend.semantics.SemanticAnalysis;
+import i2.act.examples.minic.interpreter.Interpreter;
 import i2.act.util.FileUtil;
+import i2.act.util.Pair;
 import i2.act.util.SafeWriter;
 import i2.act.util.options.ProgramArguments;
 import i2.act.util.options.ProgramArgumentsParser;
+
+import java.util.List;
 
 public final class MiniC {
 
@@ -18,12 +22,16 @@ public final class MiniC {
 
   private static final String OPTION_TO_DOT = "--toDot";
 
+  private static final String OPTION_INTERPRET = "--interpret";
+
   static {
     argumentsParser = new ProgramArgumentsParser();
 
     argumentsParser.addOption(OPTION_INPUT_FILE, true, true, "<path to input file>");
 
     argumentsParser.addOption(OPTION_TO_DOT, false);
+
+    argumentsParser.addOption(OPTION_INTERPRET, false);
   }
 
   public static final void main(final String[] args) {
@@ -50,6 +58,21 @@ public final class MiniC {
       }
 
       SemanticAnalysis.analyze(program);
+
+      if (arguments.hasOption(OPTION_INTERPRET)) {
+        final Interpreter interpreter = new Interpreter();
+        final Pair<Interpreter.Value, List<Interpreter.Value>> result =
+            interpreter.interpret(program);
+
+        final Interpreter.Value exitValue = result.getFirst();
+        final List<Interpreter.Value> output = result.getSecond();
+
+        for (final Interpreter.Value value : output) {
+          System.out.println(value);
+        }
+
+        System.out.println("EXIT: " + exitValue);
+      }
     } catch (final InvalidProgramException exception) {
       System.err.format("%s: %s\n", exception.getKind(), exception.getMessage());
       System.exit(exception.getExitCode());

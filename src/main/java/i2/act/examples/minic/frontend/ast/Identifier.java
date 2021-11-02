@@ -20,6 +20,10 @@ public final class Identifier extends Expression {
     return this.token;
   }
 
+  public final String getName() {
+    return this.token.string;
+  }
+
   public final void setSymbol(final Symbol symbol) {
     this.symbol = symbol;
   }

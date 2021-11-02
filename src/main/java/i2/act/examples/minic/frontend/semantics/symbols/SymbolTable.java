@@ -62,6 +62,10 @@ public final class SymbolTable {
     this.scopes.removeLast();
   }
 
+  public final int numberOfScopes() {
+    return this.scopes.size();
+  }
+
   public final Symbol get(final String name, final SourcePosition position) {
     for (Iterator<Scope> iterator = this.scopes.descendingIterator(); iterator.hasNext();) {
       final Scope scope = iterator.next();

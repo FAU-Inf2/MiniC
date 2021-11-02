@@ -20,6 +20,8 @@ public final class SemanticAnalysis extends BaseASTVisitor<SymbolTable, Type> {
     analysis.visit(program, new SymbolTable());
   }
 
+  // ===============================================================================================
+
   private SemanticAnalysis() {
     // intentionally left blank
   }
@@ -46,9 +48,12 @@ public final class SemanticAnalysis extends BaseASTVisitor<SymbolTable, Type> {
           String.format("%s is not a valid type for variables", type));
     }
 
-    final Symbol symbol = new Symbol(variableName, type);
+    final boolean inGlobalScope = symbolTable.numberOfScopes() == 1;
+    final Symbol symbol =
+        new Symbol(variableName, type, inGlobalScope, variableDeclaration);
 
     symbolTable.declare(symbol, variableDeclaration.getPosition());
+    identifier.setSymbol(symbol);
 
     return type;
   }
@@ -65,9 +70,12 @@ public final class SemanticAnalysis extends BaseASTVisitor<SymbolTable, Type> {
     final List<Type> parameterTypes = new ArrayList<>();
     final FunctionType functionType = new FunctionType(returnType, parameterTypes);
 
-    final Symbol symbol = new Symbol(functionName, functionType);
+    final boolean inGlobalScope = symbolTable.numberOfScopes() == 1;
+    final Symbol symbol =
+        new Symbol(functionName, functionType, inGlobalScope, functionDeclaration);
 
     symbolTable.declare(symbol, functionDeclaration.getPosition());
+    identifier.setSymbol(symbol);
 
     symbolTable.enterScope();
 
@@ -197,7 +205,11 @@ public final class SemanticAnalysis extends BaseASTVisitor<SymbolTable, Type> {
   @Override
   public final Type visit(final Identifier identifier, final SymbolTable symbolTable) {
     final String name = identifier.getToken().string;
-    return symbolTable.get(name, identifier.getPosition()).getType();
+    final Symbol symbol = symbolTable.get(name, identifier.getPosition());
+
+    identifier.setSymbol(symbol);
+
+    return symbol.getType();
   }
 
   @Override

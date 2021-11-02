@@ -2,6 +2,8 @@ package i2.act.examples.minic.frontend.ast;
 
 import i2.act.examples.minic.frontend.ast.visitors.ASTVisitor;
 import i2.act.examples.minic.frontend.info.SourcePosition;
+import i2.act.examples.minic.frontend.semantics.symbols.Symbol;
+import i2.act.examples.minic.frontend.semantics.types.Type;
 
 import java.util.Collections;
 import java.util.List;
@@ -36,6 +38,20 @@ public final class FunctionDeclaration extends Declaration {
 
   public final Block getBody() {
     return this.body;
+  }
+
+  @Override
+  public final Symbol getSymbol() {
+    return this.name.getSymbol();
+  }
+
+  @Override
+  public final Type getType() {
+    if (this.name.getSymbol() == null) {
+      return null;
+    }
+
+    return this.name.getSymbol().getType();
   }
 
   @Override
