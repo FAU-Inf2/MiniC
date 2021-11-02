@@ -3,6 +3,7 @@ package i2.act.examples.minic.frontend.semantics;
 import i2.act.examples.minic.errors.InvalidProgramException;
 import i2.act.examples.minic.frontend.ast.*;
 import i2.act.examples.minic.frontend.ast.visitors.BaseASTVisitor;
+import i2.act.examples.minic.frontend.info.SourcePosition;
 import i2.act.examples.minic.frontend.lexer.Token;
 import i2.act.examples.minic.frontend.semantics.symbols.Symbol;
 import i2.act.examples.minic.frontend.semantics.symbols.SymbolTable;
@@ -16,8 +17,12 @@ import java.util.List;
 public final class SemanticAnalysis extends BaseASTVisitor<SymbolTable, Type> {
 
   public static final void analyze(final Program program) {
+    final SymbolTable symbolTable = new SymbolTable();
+    symbolTable.enterScope();
+    symbolTable.declare(Symbol.PRINT, SourcePosition.UNKNOWN);
+
     final SemanticAnalysis analysis = new SemanticAnalysis();
-    analysis.visit(program, new SymbolTable());
+    analysis.visit(program, symbolTable);
   }
 
   // ===============================================================================================
@@ -30,7 +35,6 @@ public final class SemanticAnalysis extends BaseASTVisitor<SymbolTable, Type> {
 
   @Override
   public final Type visit(final Program program, final SymbolTable symbolTable) {
-    symbolTable.enterScope();
     return super.visit(program, symbolTable);
   }
 
@@ -143,6 +147,13 @@ public final class SemanticAnalysis extends BaseASTVisitor<SymbolTable, Type> {
     }
 
     return typeLeftHandSide;
+  }
+
+  @Override
+  public final Type visit(final FunctionCallStatement functionCallStatement,
+      final SymbolTable symbolTable) {
+    final FunctionCall functionCall = functionCallStatement.getFunctionCall();
+    return functionCall.accept(this, symbolTable);
   }
 
   @Override

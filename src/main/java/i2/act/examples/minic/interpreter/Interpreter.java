@@ -406,6 +406,12 @@ public final class Interpreter implements ASTVisitor<Interpreter.State, Interpre
   }
 
   @Override
+  public final Value visit(final FunctionCallStatement functionCallStatement, final State state) {
+    final FunctionCall functionCall = functionCallStatement.getFunctionCall();
+    return visit(functionCall, state);
+  }
+
+  @Override
   public final Value visit(final IfStatement ifStatement, final State state) {
     final Expression condition = ifStatement.getCondition();
     final BooleanValue conditionValue = toBoolean(condition.accept(this, state));
@@ -570,32 +576,42 @@ public final class Interpreter implements ASTVisitor<Interpreter.State, Interpre
   @Override
   public final Value visit(final FunctionCall functionCall, final State state) {
     final Symbol calleeSymbol = functionCall.getCallee().getSymbol();
-
-    assert (calleeSymbol.getDeclaration() instanceof FunctionDeclaration);
-    final FunctionDeclaration callee = (FunctionDeclaration) calleeSymbol.getDeclaration();
-
-    assert (calleeSymbol.getType() instanceof FunctionType);
-    final FunctionType calleeType = (FunctionType) calleeSymbol.getType();
-
-    final Map<Symbol, Value> argumentValues = new HashMap<>();
-
     final List<Expression> arguments = functionCall.getArguments();
-    final List<VariableDeclaration> parameters = callee.getParameters();
 
-    assert (arguments.size() == parameters.size());
-
-    for (int index = 0; index < arguments.size(); ++index) {
-      final Expression argument = arguments.get(index);
+    if (calleeSymbol == Symbol.PRINT) {
+      assert (arguments.size() == 1);
+      final Expression argument = arguments.get(0);
       final Value argumentValue = argument.accept(this, state);
 
-      final VariableDeclaration parameter = parameters.get(index);
-      final Symbol parameterSymbol = parameter.getSymbol();
+      state.print(argumentValue);
 
-      argumentValues.put(parameterSymbol, argumentValue);
+      return null;
+    } else {
+      assert (calleeSymbol.getDeclaration() instanceof FunctionDeclaration);
+      final FunctionDeclaration callee = (FunctionDeclaration) calleeSymbol.getDeclaration();
+
+      assert (calleeSymbol.getType() instanceof FunctionType);
+      final FunctionType calleeType = (FunctionType) calleeSymbol.getType();
+
+      final Map<Symbol, Value> argumentValues = new HashMap<>();
+
+      final List<VariableDeclaration> parameters = callee.getParameters();
+
+      assert (arguments.size() == parameters.size());
+
+      for (int index = 0; index < arguments.size(); ++index) {
+        final Expression argument = arguments.get(index);
+        final Value argumentValue = argument.accept(this, state);
+
+        final VariableDeclaration parameter = parameters.get(index);
+        final Symbol parameterSymbol = parameter.getSymbol();
+
+        argumentValues.put(parameterSymbol, argumentValue);
+      }
+
+      state.enterFunction(argumentValues);
+      return visit(callee, state);
     }
-
-    state.enterFunction(argumentValues);
-    return visit(callee, state);
   }
 
 }

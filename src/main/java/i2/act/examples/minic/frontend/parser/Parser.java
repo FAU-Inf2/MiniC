@@ -175,6 +175,7 @@ public final class Parser {
   private static final Statement parseStatement(final Lexer lexer) {
     // statement
     //   : IDENTIFIER ASSIGN expression SEMICOLON
+    //   | IDENTIFIER function_call_part SEMICOLON
     //   | IF LPAREN expression RPAREN block ( ELSE block )?
     //   | WHILE LPAREN expression RPAREN block
     //   | RETURN ( expression )? SEMICOLON
@@ -184,15 +185,23 @@ public final class Parser {
     final SourcePosition position = lexer.getPosition();
 
     if (lexer.peekIs(TokenKind.TK_IDENTIFIER)) {
-      final Identifier leftHandSide = parseIdentifier(lexer);
+      final Identifier identifier = parseIdentifier(lexer);
 
-      lexer.assertPop(TokenKind.TK_ASSIGN);
+      if (lexer.peekIs(TokenKind.TK_ASSIGN)) {
+        lexer.assertPop(TokenKind.TK_ASSIGN);
 
-      final Expression rightHandSide = parseExpression(lexer);
+        final Expression rightHandSide = parseExpression(lexer);
 
-      lexer.assertPop(TokenKind.TK_SEMICOLON);
+        lexer.assertPop(TokenKind.TK_SEMICOLON);
 
-      return new AssignStatement(position, leftHandSide, rightHandSide);
+        return new AssignStatement(position, identifier, rightHandSide);
+      } else {
+        final FunctionCall functionCall = parseFunctionCallPart(lexer, position, identifier);
+
+        lexer.assertPop(TokenKind.TK_SEMICOLON);
+
+        return new FunctionCallStatement(position, functionCall);
+      }
     } else if (lexer.peekIs(TokenKind.TK_IF)) {
       lexer.assertPop(TokenKind.TK_IF);
       lexer.assertPop(TokenKind.TK_LPAREN);

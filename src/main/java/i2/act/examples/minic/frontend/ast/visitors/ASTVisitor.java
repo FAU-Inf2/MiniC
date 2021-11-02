@@ -16,6 +16,8 @@ public interface ASTVisitor<P, R> {
 
   public R visit(final AssignStatement assignStatement, final P parameter);
 
+  public R visit(final FunctionCallStatement functionCallStatement, final P parameter);
+
   public R visit(final IfStatement ifStatement, final P parameter);
 
   public R visit(final WhileLoop whileLoop, final P parameter);

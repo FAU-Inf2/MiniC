@@ -107,6 +107,16 @@ public abstract class BaseASTVisitor<P, R> implements ASTVisitor<P, R>  {
   }
 
   @Override
+  public R visit(final FunctionCallStatement functionCallStatement, final P parameter) {
+    prolog(functionCallStatement, parameter);
+
+    final FunctionCall functionCall = functionCallStatement.getFunctionCall();
+    visitChild(functionCallStatement, functionCall, parameter);
+
+    return epilog(functionCallStatement, parameter);
+  }
+
+  @Override
   public R visit(final IfStatement ifStatement, final P parameter) {
     prolog(ifStatement, parameter);
 

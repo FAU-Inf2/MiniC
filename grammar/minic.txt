@@ -29,6 +29,7 @@ block
 
 statement
   : IDENTIFIER ASSIGN expression SEMICOLON
+  | function_call SEMICOLON
   | IF LPAREN expression RPAREN block ( ELSE block )?
   | WHILE LPAREN expression RPAREN block
   | RETURN ( expression )? SEMICOLON

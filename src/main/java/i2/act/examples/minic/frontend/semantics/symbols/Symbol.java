@@ -1,9 +1,27 @@
 package i2.act.examples.minic.frontend.semantics.symbols;
 
 import i2.act.examples.minic.frontend.ast.Declaration;
+import i2.act.examples.minic.frontend.semantics.types.AtomicType;
+import i2.act.examples.minic.frontend.semantics.types.FunctionType;
 import i2.act.examples.minic.frontend.semantics.types.Type;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public final class Symbol {
+
+  public static final Symbol PRINT;
+
+  static {
+    final List<Type> printParameterTypes = new ArrayList<>();
+    printParameterTypes.add(AtomicType.INT);
+
+    final FunctionType printType = new FunctionType(AtomicType.VOID, printParameterTypes);
+
+    PRINT = new Symbol("print", printType, true, null);
+  }
+
+  // ===============================================================================================
 
   private final String name;
   private final Type type;
