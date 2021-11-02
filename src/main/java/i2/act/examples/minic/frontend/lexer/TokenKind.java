@@ -9,6 +9,7 @@ public enum TokenKind {
   TK_INT("int"),
   TK_IF("if"),
   TK_ELSE("else"),
+  TK_WHILE("while"),
   TK_RETURN("return"),
   TK_SEMICOLON(";"),
   TK_ASSIGN("="),

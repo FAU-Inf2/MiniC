@@ -176,6 +176,7 @@ public final class Parser {
     // statement
     //   : IDENTIFIER ASSIGN expression SEMICOLON
     //   | IF LPAREN expression RPAREN block ( ELSE block )?
+    //   | WHILE LPAREN expression RPAREN block
     //   | RETURN ( expression )? SEMICOLON
     //   | variable_declaration
     //   ;
@@ -211,6 +212,17 @@ public final class Parser {
       } else {
         return new IfStatement(position, condition, thenBlock);
       }
+    } else if (lexer.peekIs(TokenKind.TK_WHILE)) {
+      lexer.assertPop(TokenKind.TK_WHILE);
+      lexer.assertPop(TokenKind.TK_LPAREN);
+
+      final Expression condition = parseExpression(lexer);
+
+      lexer.assertPop(TokenKind.TK_RPAREN);
+
+      final Block body = parseBlock(lexer);
+
+      return new WhileLoop(position, condition, body);
     } else if (lexer.peekIs(TokenKind.TK_RETURN)) {
       lexer.assertPop(TokenKind.TK_RETURN);
 

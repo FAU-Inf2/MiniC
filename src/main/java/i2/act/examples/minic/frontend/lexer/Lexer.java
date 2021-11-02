@@ -308,6 +308,9 @@ public final class Lexer {
             case "else": {
               return new Token(TokenKind.TK_ELSE, begin);
             }
+            case "while": {
+              return new Token(TokenKind.TK_WHILE, begin);
+            }
             case "return": {
               return new Token(TokenKind.TK_RETURN, begin);
             }

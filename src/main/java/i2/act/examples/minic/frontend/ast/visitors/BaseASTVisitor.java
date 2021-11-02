@@ -125,6 +125,19 @@ public abstract class BaseASTVisitor<P, R> implements ASTVisitor<P, R>  {
   }
 
   @Override
+  public R visit(final WhileLoop whileLoop, final P parameter) {
+    prolog(whileLoop, parameter);
+
+    final Expression condition = whileLoop.getCondition();
+    visitChild(whileLoop, condition, parameter);
+
+    final Block body = whileLoop.getBody();
+    visitChild(whileLoop, body, parameter);
+
+    return epilog(whileLoop, parameter);
+  }
+
+  @Override
   public R visit(final ReturnStatement returnStatement, final P parameter) {
     prolog(returnStatement, parameter);
 

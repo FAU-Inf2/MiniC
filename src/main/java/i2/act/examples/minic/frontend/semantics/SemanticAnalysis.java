@@ -167,6 +167,22 @@ public final class SemanticAnalysis extends BaseASTVisitor<SymbolTable, Type> {
   }
 
   @Override
+  public final Type visit(final WhileLoop whileLoop, final SymbolTable symbolTable) {
+    final Expression condition = whileLoop.getCondition();
+    final Type typeCondition = condition.accept(this, symbolTable);
+
+    if (!typeCondition.assignableTo(AtomicType.BOOLEAN)) {
+      throw InvalidProgramException.semanticallyInvalid(condition.getPosition(),
+          String.format("while condition must be of type %s", AtomicType.BOOLEAN));
+    }
+
+    final Block body = whileLoop.getBody();
+    body.accept(this, symbolTable);
+
+    return null;
+  }
+
+  @Override
   public final Type visit(final ReturnStatement returnStatement, final SymbolTable symbolTable) {
     assert (this.expectedReturnType != null);
 

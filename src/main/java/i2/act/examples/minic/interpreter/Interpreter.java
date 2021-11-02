@@ -397,6 +397,23 @@ public final class Interpreter implements ASTVisitor<Interpreter.State, Interpre
   }
 
   @Override
+  public final Value visit(final WhileLoop whileLoop, final State state) {
+    while (true) {
+      final Expression condition = whileLoop.getCondition();
+      final BooleanValue conditionValue = toBoolean(condition.accept(this, state));
+
+      if (isTrue(conditionValue)) {
+        final Block body = whileLoop.getBody();
+        visit(body, state);
+      } else {
+        break;
+      }
+    }
+
+    return null;
+  }
+
+  @Override
   public final Value visit(final ReturnStatement returnStatement, final State state) {
     if (returnStatement.hasReturnValue()) {
       final Value returnValue = returnStatement.getReturnValue().accept(this, state);
