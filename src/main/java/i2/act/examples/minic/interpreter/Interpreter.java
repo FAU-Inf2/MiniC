@@ -37,12 +37,6 @@ public final class Interpreter implements ASTVisitor<Interpreter.State, Interpre
     if (isUndefined(exitValue)) {
       throw InvalidProgramException.dynamicallyInvalid("undefined exit value");
     }
-
-    for (final Value value : output) {
-      if (isUndefined(value)) {
-        throw InvalidProgramException.dynamicallyInvalid("undefined output");
-      }
-    }
   }
 
   // ===============================================================================================
@@ -582,6 +576,11 @@ public final class Interpreter implements ASTVisitor<Interpreter.State, Interpre
       assert (arguments.size() == 1);
       final Expression argument = arguments.get(0);
       final Value argumentValue = argument.accept(this, state);
+
+      if (this.abortOnUndefinedBehavior && isUndefined(argumentValue)) {
+        throw InvalidProgramException.dynamicallyInvalid(
+            argument.getPosition(), "undefined output");
+      }
 
       state.print(argumentValue);
 
