@@ -1,5 +1,6 @@
 package i2.act.examples.minic.interpreter;
 
+import i2.act.examples.minic.errors.InvalidProgramException;
 import i2.act.examples.minic.frontend.ast.*;
 import i2.act.examples.minic.frontend.ast.visitors.ASTVisitor;
 import i2.act.examples.minic.frontend.semantics.symbols.Symbol;
@@ -19,11 +20,29 @@ public final class Interpreter implements ASTVisitor<Interpreter.State, Interpre
 
   public static final Pair<Value, List<Value>> interpret(final Program program) {
     final State state = new State();
-    final Interpreter interpreter = new Interpreter();
+    final Interpreter interpreter = new Interpreter(false);
 
     final Value exitValue = interpreter.visit(program, state);
 
     return new Pair<Value, List<Value>>(exitValue, state.getOutput());
+  }
+
+  public static final void checkDynamicallyValid(final Program program) {
+    final State state = new State();
+    final Interpreter interpreter = new Interpreter(true);
+
+    final Value exitValue = interpreter.visit(program, state);
+    final List<Value> output = state.getOutput();
+
+    if (isUndefined(exitValue)) {
+      throw InvalidProgramException.dynamicallyInvalid("undefined exit value");
+    }
+
+    for (final Value value : output) {
+      if (isUndefined(value)) {
+        throw InvalidProgramException.dynamicallyInvalid("undefined output");
+      }
+    }
   }
 
   // ===============================================================================================
@@ -194,7 +213,7 @@ public final class Interpreter implements ASTVisitor<Interpreter.State, Interpre
 
   // ===============================================================================================
 
-  private final NumberValue toNumber(final Value value) {
+  private static final NumberValue toNumber(final Value value) {
     if (value instanceof NumberValue) {
       return (NumberValue) value;
     }
@@ -218,7 +237,7 @@ public final class Interpreter implements ASTVisitor<Interpreter.State, Interpre
     return null;
   }
 
-  private final BooleanValue toBoolean(final Value value) {
+  private static final BooleanValue toBoolean(final Value value) {
     if (value instanceof BooleanValue) {
       return (BooleanValue) value;
     }
@@ -242,28 +261,28 @@ public final class Interpreter implements ASTVisitor<Interpreter.State, Interpre
     return null;
   }
 
-  private final boolean isTrue(final BooleanValue booleanValue) {
+  private static final boolean isTrue(final BooleanValue booleanValue) {
     if (booleanValue == BooleanValue.UNDEFINED) {
-      // TODO handle undefined boolean
+      return false;
     }
 
     return booleanValue.value;
   }
 
-  private final boolean isFalse(final BooleanValue booleanValue) {
+  private static final boolean isFalse(final BooleanValue booleanValue) {
     if (booleanValue == BooleanValue.UNDEFINED) {
-      // TODO handle undefined boolean
+      return false;
     }
 
     return !booleanValue.value;
   }
 
-  private final boolean isUndefined(final Value value) {
+  private static final boolean isUndefined(final Value value) {
     assert ((value instanceof NumberValue) || (value instanceof BooleanValue));
     return (value == NumberValue.UNDEFINED) || (value == BooleanValue.UNDEFINED);
   }
 
-  private final Value getUndefined(final AtomicType type) {
+  private static final Value getUndefined(final AtomicType type) {
     if (type == AtomicType.INT) {
       return NumberValue.UNDEFINED;
     } else {
@@ -284,6 +303,14 @@ public final class Interpreter implements ASTVisitor<Interpreter.State, Interpre
       this.returnValue = returnValue;
     }
 
+  }
+
+  // ===============================================================================================
+
+  private final boolean abortOnUndefinedBehavior;
+
+  private Interpreter(final boolean abortOnUndefinedBehavior) {
+    this.abortOnUndefinedBehavior = abortOnUndefinedBehavior;
   }
 
   @Override
@@ -383,6 +410,11 @@ public final class Interpreter implements ASTVisitor<Interpreter.State, Interpre
     final Expression condition = ifStatement.getCondition();
     final BooleanValue conditionValue = toBoolean(condition.accept(this, state));
 
+    if (this.abortOnUndefinedBehavior && isUndefined(conditionValue)) {
+      throw InvalidProgramException.dynamicallyInvalid(
+          condition.getPosition(), "undefined control flow");
+    }
+
     if (isTrue(conditionValue)) {
       final Block thenBlock = ifStatement.getThenBlock();
       visit(thenBlock, state);
@@ -401,6 +433,11 @@ public final class Interpreter implements ASTVisitor<Interpreter.State, Interpre
     while (true) {
       final Expression condition = whileLoop.getCondition();
       final BooleanValue conditionValue = toBoolean(condition.accept(this, state));
+
+      if (this.abortOnUndefinedBehavior && isUndefined(conditionValue)) {
+        throw InvalidProgramException.dynamicallyInvalid(
+            condition.getPosition(), "undefined control flow");
+      }
 
       if (isTrue(conditionValue)) {
         final Block body = whileLoop.getBody();

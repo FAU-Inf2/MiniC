@@ -22,6 +22,7 @@ public final class MiniC {
 
   private static final String OPTION_TO_DOT = "--toDot";
 
+  private static final String OPTION_CHECK_UNDEFINED = "--checkUndef";
   private static final String OPTION_INTERPRET = "--interpret";
 
   static {
@@ -31,6 +32,7 @@ public final class MiniC {
 
     argumentsParser.addOption(OPTION_TO_DOT, false);
 
+    argumentsParser.addOption(OPTION_CHECK_UNDEFINED, false);
     argumentsParser.addOption(OPTION_INTERPRET, false);
   }
 
@@ -59,10 +61,13 @@ public final class MiniC {
 
       SemanticAnalysis.analyze(program);
 
+      if (arguments.hasOption(OPTION_CHECK_UNDEFINED)) {
+        Interpreter.checkDynamicallyValid(program);
+      }
+
       if (arguments.hasOption(OPTION_INTERPRET)) {
-        final Interpreter interpreter = new Interpreter();
         final Pair<Interpreter.Value, List<Interpreter.Value>> result =
-            interpreter.interpret(program);
+            Interpreter.interpret(program);
 
         final Interpreter.Value exitValue = result.getFirst();
         final List<Interpreter.Value> output = result.getSecond();

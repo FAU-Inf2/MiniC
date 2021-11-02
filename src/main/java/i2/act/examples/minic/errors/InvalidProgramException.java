@@ -8,7 +8,8 @@ public final class InvalidProgramException extends RuntimeException {
 
     LEXICALLY_INVALID(130),
     SYNTACTICALLY_INVALID(131),
-    SEMANTICALLY_INVALID(132);
+    SEMANTICALLY_INVALID(132),
+    DYNAMICALLY_INVALID(133);
 
     public final int exitCode;
 
@@ -67,6 +68,15 @@ public final class InvalidProgramException extends RuntimeException {
   public static final InvalidProgramException semanticallyInvalid(final SourcePosition position,
       final String message) {
     return new InvalidProgramException(Kind.SEMANTICALLY_INVALID, position, message);
+  }
+
+  public static final InvalidProgramException dynamicallyInvalid(final String message) {
+    return dynamicallyInvalid(SourcePosition.UNKNOWN, message);
+  }
+
+  public static final InvalidProgramException dynamicallyInvalid(final SourcePosition position,
+      final String message) {
+    return new InvalidProgramException(Kind.DYNAMICALLY_INVALID, position, message);
   }
 
 }
