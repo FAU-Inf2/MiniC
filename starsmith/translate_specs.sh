@@ -61,4 +61,4 @@ function translate_spec() { # <spec file> <java file> <max depth>
   popd > /dev/null
 }
 
-translate_spec "minic.ls" "minic.java" 11
+translate_spec "minic.ls" "minic.java" 25
