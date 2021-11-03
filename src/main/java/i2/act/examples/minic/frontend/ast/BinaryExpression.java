@@ -25,8 +25,8 @@ public final class BinaryExpression extends Expression {
     MUL           ("*",  5, AtomicType.INT, AtomicType.INT),
     DIV           ("/",  5, AtomicType.INT, AtomicType.INT);
 
-    private final String stringRepresentation;
-    private final int precedence;
+    public final String stringRepresentation;
+    public final int precedence;
 
     public final Type sourceType;
     public final Type resultType;

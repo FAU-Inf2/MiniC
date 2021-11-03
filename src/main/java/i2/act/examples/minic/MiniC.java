@@ -5,6 +5,7 @@ import i2.act.examples.minic.bugs.Bugs;
 import i2.act.examples.minic.errors.InvalidProgramException;
 import i2.act.examples.minic.frontend.ast.Program;
 import i2.act.examples.minic.frontend.ast.visitors.DotGenerator;
+import i2.act.examples.minic.frontend.ast.visitors.PrettyPrinter;
 import i2.act.examples.minic.frontend.parser.Parser;
 import i2.act.examples.minic.frontend.semantics.SemanticAnalysis;
 import i2.act.examples.minic.interpreter.Interpreter;
@@ -22,6 +23,7 @@ public final class MiniC {
 
   private static final String OPTION_INPUT_FILE = "--in";
 
+  private static final String OPTION_PRETTY_PRINT = "--prettyPrint";
   private static final String OPTION_TO_DOT = "--toDot";
 
   private static final String OPTION_CHECK_UNDEFINED = "--checkUndef";
@@ -39,6 +41,7 @@ public final class MiniC {
 
     argumentsParser.addOption(OPTION_INPUT_FILE, true, true, "<path to input file>");
 
+    argumentsParser.addOption(OPTION_PRETTY_PRINT, false, true, "<file name>");
     argumentsParser.addOption(OPTION_TO_DOT, false);
 
     argumentsParser.addOption(OPTION_CHECK_UNDEFINED, false);
@@ -74,6 +77,19 @@ public final class MiniC {
 
     try {
       final Program program = Parser.parse(input);
+
+      if (arguments.hasOption(OPTION_PRETTY_PRINT)) {
+        final String fileNamePrettyPrinted = arguments.getOption(OPTION_PRETTY_PRINT);
+
+        final SafeWriter writer = SafeWriter.openFile(fileNamePrettyPrinted);
+        PrettyPrinter.prettyPrint(program, writer);
+
+        if ("-".equals(fileNamePrettyPrinted)) {
+          writer.flush();
+        } else {
+          writer.close();
+        }
+      }
 
       if (arguments.hasOption(OPTION_TO_DOT)) {
         final SafeWriter writer = SafeWriter.openStdOut();
