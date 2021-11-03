@@ -75,6 +75,13 @@ public final class Parser {
 
     final Block body = parseBlock(lexer);
 
+    // check for injected bug
+    {
+      if (Bugs.getInstance().isEnabled(Bug.ADDITIONAL_SEMICOLON_FUNCTION)) {
+        lexer.assertPop(TokenKind.TK_SEMICOLON);
+      }
+    }
+
     return new FunctionDeclaration(position, typeName, name, parameters, body);
   }
 
