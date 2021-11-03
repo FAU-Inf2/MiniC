@@ -326,6 +326,11 @@ public final class Lexer {
               continue skip;
             }
 
+            if (Bugs.getInstance().isEnabled(Bug.MISSING_TOKEN_WHILE)
+                && tokenText.equals("while")) {
+              continue skip;
+            }
+
             if (Bugs.getInstance().isEnabled(Bug.WRONG_TOKEN_IF) && tokenText.equals("if")) {
               final SourcePosition end = new SourcePosition(
                   this.lookaheadPosition, this.lookaheadLine, this.lookaheadColumn);
