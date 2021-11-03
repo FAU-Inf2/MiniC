@@ -321,6 +321,11 @@ public final class Interpreter implements ASTVisitor<Interpreter.State, Interpre
     this.abortOnUndefinedBehavior = abortOnUndefinedBehavior;
   }
 
+  private static final boolean isPowerOfTwo(final BigInteger value) {
+    return value.compareTo(BigInteger.ONE) == 1
+        && value.and(value.subtract(BigInteger.ONE)).equals(BigInteger.ZERO);
+  }
+
   @Override
   public final Value visit(final Program program, final State state) {
     FunctionDeclaration mainFunction = null;
@@ -590,7 +595,15 @@ public final class Interpreter implements ASTVisitor<Interpreter.State, Interpre
           return new NumberValue(toNumber(leftValue).value.subtract(toNumber(rightValue).value));
         }
         case MUL: {
-          return new NumberValue(toNumber(leftValue).value.multiply(toNumber(rightValue).value));
+          final NumberValue rightNumber = toNumber(rightValue);
+
+          // check for injected bug
+          if (Bugs.getInstance().isEnabled(Bug.WRONG_SHIFT_MUL)
+              && isPowerOfTwo(rightNumber.value)) {
+            return rightNumber;
+          }
+
+          return new NumberValue(toNumber(leftValue).value.multiply(rightNumber.value));
         }
         case DIV: {
           final NumberValue divisor = toNumber(rightValue);
