@@ -200,20 +200,27 @@ public final class SemanticAnalysis extends BaseASTVisitor<SymbolTable, Type> {
     assert (this.expectedReturnType != null);
 
     if (returnStatement.hasReturnValue()) {
-      if (this.expectedReturnType == AtomicType.VOID) {
-        throw InvalidProgramException.semanticallyInvalid(returnStatement.getPosition(),
-            String.format("cannot return a value from a %s function", AtomicType.VOID));
+      // check for injected bug
+      if (Bugs.getInstance().isEnabled(Bug.MISSING_CHECK_RETURN_VOID)
+          && this.expectedReturnType == AtomicType.VOID) {
+        final Expression returnValue = returnStatement.getReturnValue();
+        return returnValue.accept(this, symbolTable);
+      } else {
+        if (this.expectedReturnType == AtomicType.VOID) {
+          throw InvalidProgramException.semanticallyInvalid(returnStatement.getPosition(),
+              String.format("cannot return a value from a %s function", AtomicType.VOID));
+        }
+
+        final Expression returnValue = returnStatement.getReturnValue();
+        final Type returnType = returnValue.accept(this, symbolTable);
+
+        if (!returnType.assignableTo(this.expectedReturnType)) {
+          throw InvalidProgramException.semanticallyInvalid(returnStatement.getPosition(),
+              String.format("%s cannot be assigned to %s", returnType, this.expectedReturnType));
+        }
+
+        return returnType;
       }
-
-      final Expression returnValue = returnStatement.getReturnValue();
-      final Type returnType = returnValue.accept(this, symbolTable);
-
-      if (!returnType.assignableTo(this.expectedReturnType)) {
-        throw InvalidProgramException.semanticallyInvalid(returnStatement.getPosition(),
-            String.format("%s cannot be assigned to %s", returnType, this.expectedReturnType));
-      }
-
-      return returnType;
     } else {
       if (this.expectedReturnType != AtomicType.VOID) {
         throw InvalidProgramException.semanticallyInvalid(returnStatement.getPosition(),

@@ -21,7 +21,8 @@ public enum Bug {
   RIGHT_ASSOCIATIVE_ADD_EXPR("right_associative_add_expr", Category.PARSER),
 
   // analysis bugs
-  MISSING_SYMBOL_CALLEE("missing_symbol_callee", Category.ANALYSIS);
+  MISSING_SYMBOL_CALLEE("missing_symbol_callee", Category.ANALYSIS),
+  MISSING_CHECK_RETURN_VOID("missing_check_return_void", Category.ANALYSIS);
 
   // ===============================================================================================
 
