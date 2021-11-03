@@ -235,6 +235,15 @@ public final class Lexer {
               begin);
         }
         case '&': {
+          // check for injected bug
+          {
+            if (Bugs.getInstance().isEnabled(Bug.WRONG_REGEX_AND)) {
+              return new Token(
+                  checkNextCharacter('|', TokenKind.TK_AND_OP, null),
+                  begin);
+            }
+          }
+
           return new Token(
               checkNextCharacter('&', TokenKind.TK_AND_OP, null),
               begin);
