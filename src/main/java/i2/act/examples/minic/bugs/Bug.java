@@ -13,7 +13,8 @@ public enum Bug {
 
   // parser bugs 
   MISSING_TREE_ELSE("missing_tree_else", Category.PARSER),
-  MISSING_ALTERNATIVE_NOT_EQUALS("missing_alternative_not_equals", Category.PARSER);
+  MISSING_ALTERNATIVE_NOT_EQUALS("missing_alternative_not_equals", Category.PARSER),
+  MISSING_ALTERNATIVE_CALL_STMT("missing_alternative_call_stmt", Category.PARSER);
 
   // ===============================================================================================
 

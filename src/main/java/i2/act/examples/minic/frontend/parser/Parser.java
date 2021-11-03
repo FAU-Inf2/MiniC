@@ -190,7 +190,14 @@ public final class Parser {
     if (lexer.peekIs(TokenKind.TK_IDENTIFIER)) {
       final Identifier identifier = parseIdentifier(lexer);
 
-      if (lexer.peekIs(TokenKind.TK_ASSIGN)) {
+      // check for injected bug
+      final boolean missingAlternativeCallStatement;
+      {
+        missingAlternativeCallStatement =
+            Bugs.getInstance().isEnabled(Bug.MISSING_ALTERNATIVE_CALL_STMT);
+      }
+
+      if (lexer.peekIs(TokenKind.TK_ASSIGN) || missingAlternativeCallStatement) {
         lexer.assertPop(TokenKind.TK_ASSIGN);
 
         final Expression rightHandSide = parseExpression(lexer);
