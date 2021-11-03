@@ -315,6 +315,35 @@ public final class Parser {
     return expression;
   }
 
+  private static final Expression parseBinaryExpressionRightAssociative(final Lexer lexer,
+      final Function<Lexer, Expression> operandParser, final TokenKind... operators) {
+    // <binary_expr>
+    //   : <operand> ( <OPERATOR> <operand> )*
+    //   ;
+
+    final SourcePosition position = lexer.getPosition();
+
+    Expression expression = operandParser.apply(lexer);
+
+    if (lexer.peekIs(operators)) {
+      final BinaryExpression.Operator operator = lexer.pop().kind.operator;
+      assert (operator != null);
+
+      final Expression otherExpression =
+          parseBinaryExpressionRightAssociative(lexer, operandParser, operators);
+
+      // check for injected bug
+      if (Bugs.getInstance().isEnabled(Bug.SWAPPED_OPERANDS_PLUS)
+          && operator == BinaryExpression.Operator.ADD) {
+        expression = new BinaryExpression(position, operator, otherExpression, expression);
+      } else {
+        expression = new BinaryExpression(position, operator, expression, otherExpression);
+      }
+    }
+
+    return expression;
+  }
+
   private static final Expression parseOrExpression(final Lexer lexer) {
     // or_expression
     //   : and_expression ( OR_OP and_expression )*
@@ -371,10 +400,18 @@ public final class Parser {
     //   : ADD | SUB
     //   ;
 
-    return parseBinaryExpression(
-        lexer,
-        (_lexer) -> parseMulExpression(_lexer),
-        TokenKind.TK_ADD, TokenKind.TK_SUB);
+    // check for injected bug
+    if (Bugs.getInstance().isEnabled(Bug.RIGHT_ASSOCIATIVE_ADD_EXPR)) {
+      return parseBinaryExpressionRightAssociative(
+          lexer,
+          (_lexer) -> parseMulExpression(_lexer),
+          TokenKind.TK_ADD, TokenKind.TK_SUB);
+    } else {
+      return parseBinaryExpression(
+          lexer,
+          (_lexer) -> parseMulExpression(_lexer),
+          TokenKind.TK_ADD, TokenKind.TK_SUB);
+    }
   }
 
   private static final Expression parseMulExpression(final Lexer lexer) {

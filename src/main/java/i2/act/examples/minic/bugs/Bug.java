@@ -17,7 +17,8 @@ public enum Bug {
   MISSING_ALTERNATIVE_CALL_STMT("missing_alternative_call_stmt", Category.PARSER),
   ADDITIONAL_SEMICOLON_FUNCTION("additional_semicolon_function", Category.PARSER),
   MISSING_COMMA_ARGUMENTS("missing_comma_arguments", Category.PARSER),
-  SWAPPED_OPERANDS_PLUS("swapped_operands_plus", Category.PARSER);
+  SWAPPED_OPERANDS_PLUS("swapped_operands_plus", Category.PARSER),
+  RIGHT_ASSOCIATIVE_ADD_EXPR("right_associative_add_expr", Category.PARSER);
 
   // ===============================================================================================
 
