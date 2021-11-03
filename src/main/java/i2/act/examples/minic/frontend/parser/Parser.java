@@ -449,7 +449,10 @@ public final class Parser {
       }
 
       while (lexer.peekIs(TokenKind.TK_COMMA)) {
-        lexer.assertPop(TokenKind.TK_COMMA);
+        // check for injected bug
+        if (!Bugs.getInstance().isEnabled(Bug.MISSING_COMMA_ARGUMENTS)) {
+          lexer.assertPop(TokenKind.TK_COMMA);
+        }
 
         final Expression argument = parseExpression(lexer);
         arguments.add(argument);
