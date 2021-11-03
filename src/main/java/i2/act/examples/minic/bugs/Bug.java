@@ -4,7 +4,8 @@ public enum Bug {
 
   MISSING_TOKEN_ELSE("missing_token_else", Category.LEXER),
   WRONG_TOKEN_IF("wrong_token_if", Category.LEXER),
-  WRONG_TOKEN_PLUS("wrong_token_plus", Category.LEXER);
+  WRONG_TOKEN_PLUS("wrong_token_plus", Category.LEXER),
+  NO_EQUALS_TOKEN("no_equals_token", Category.LEXER);
 
   // ===============================================================================================
 

@@ -203,6 +203,13 @@ public final class Lexer {
           return new Token(TokenKind.TK_SEMICOLON, begin);
         }
         case '=': {
+          // check for injected bug
+          {
+            if (Bugs.getInstance().isEnabled(Bug.NO_EQUALS_TOKEN)) {
+              return new Token(TokenKind.TK_ASSIGN, begin);
+            }
+          }
+
           return new Token(
               checkNextCharacter('=', TokenKind.TK_EQUALS, TokenKind.TK_ASSIGN),
               begin);
