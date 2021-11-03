@@ -1,5 +1,7 @@
 package i2.act.examples.minic.frontend.semantics.symbols;
 
+import i2.act.examples.minic.bugs.Bug;
+import i2.act.examples.minic.bugs.Bugs;
 import i2.act.examples.minic.errors.InvalidProgramException;
 import i2.act.examples.minic.frontend.info.SourcePosition;
 
@@ -67,7 +69,17 @@ public final class SymbolTable {
   }
 
   public final Symbol get(final String name, final SourcePosition position) {
-    for (Iterator<Scope> iterator = this.scopes.descendingIterator(); iterator.hasNext();) {
+    final Iterator<Scope> iterator;
+    {
+      // check for injected bug
+      if (Bugs.getInstance().isEnabled(Bug.WRONG_ORDER_SYMBOL_TABLE)) {
+        iterator = this.scopes.iterator();
+      } else {
+        iterator = this.scopes.descendingIterator();
+      }
+    }
+
+    while (iterator.hasNext()) {
       final Scope scope = iterator.next();
       final Symbol symbol = scope.get(name);
 
