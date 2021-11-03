@@ -302,7 +302,14 @@ public final class Parser {
       assert (operator != null);
 
       final Expression otherExpression = operandParser.apply(lexer);
-      expression = new BinaryExpression(position, operator, expression, otherExpression);
+
+      // check for injected bug
+      if (Bugs.getInstance().isEnabled(Bug.SWAPPED_OPERANDS_PLUS)
+          && operator == BinaryExpression.Operator.ADD) {
+        expression = new BinaryExpression(position, operator, otherExpression, expression);
+      } else {
+        expression = new BinaryExpression(position, operator, expression, otherExpression);
+      }
     }
 
     return expression;
