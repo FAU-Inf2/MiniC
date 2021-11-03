@@ -30,7 +30,8 @@ public enum Bug {
   // interpreter bugs
   DIV_BY_ZERO("div_by_zero", Category.INTERPRETER),
   NO_SHORTCUT_OR("no_shortcut_or", Category.INTERPRETER),
-  NO_SHORTCUT_AND("no_shortcut_and", Category.INTERPRETER);
+  NO_SHORTCUT_AND("no_shortcut_and", Category.INTERPRETER),
+  MISSING_INIT_GLOBALS("missing_init_globals", Category.INTERPRETER);
 
   // ===============================================================================================
 

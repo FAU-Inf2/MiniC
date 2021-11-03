@@ -359,14 +359,17 @@ public final class Interpreter implements ASTVisitor<Interpreter.State, Interpre
   public final Value visit(final VariableDeclaration variableDeclaration, final State state) {
     final Symbol symbol = variableDeclaration.getSymbol();
 
-    if (symbol.isGlobal()) {
-      // only global variables have a predefined value
-      assert (variableDeclaration.getType() == AtomicType.INT) : "only INT variables supported";
+    // check for injected bug
+    if (!Bugs.getInstance().isEnabled(Bug.MISSING_INIT_GLOBALS)) {
+      if (symbol.isGlobal()) {
+        // only global variables have a predefined value
+        assert (variableDeclaration.getType() == AtomicType.INT) : "only INT variables supported";
 
-      final NumberValue initialValue = new NumberValue(BigInteger.ZERO);
-      state.defineVariable(symbol, initialValue);
+        final NumberValue initialValue = new NumberValue(BigInteger.ZERO);
+        state.defineVariable(symbol, initialValue);
 
-      return initialValue;
+        return initialValue;
+      }
     }
 
     return null;
