@@ -180,6 +180,7 @@ public final class Parser {
     //   | WHILE LPAREN expression RPAREN block
     //   | RETURN ( expression )? SEMICOLON
     //   | variable_declaration
+    //   | block
     //   ;
 
     final SourcePosition position = lexer.getPosition();
@@ -246,6 +247,9 @@ public final class Parser {
 
         return new ReturnStatement(position, returnValue);
       }
+    } else if (lexer.peekIs(TokenKind.TK_LBRACE)) {
+      final Block block = parseBlock(lexer);
+      return block;
     } else {
       final VariableDeclaration variableDeclaration = parseVariableDeclaration(lexer);
       return new DeclarationStatement(position, variableDeclaration);

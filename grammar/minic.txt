@@ -34,6 +34,7 @@ statement
   | WHILE LPAREN expression RPAREN block
   | RETURN ( expression )? SEMICOLON
   | variable_declaration
+  | block
   ;
 
 type_name

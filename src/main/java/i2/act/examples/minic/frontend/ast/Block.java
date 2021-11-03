@@ -6,7 +6,7 @@ import i2.act.examples.minic.frontend.info.SourcePosition;
 import java.util.Collections;
 import java.util.List;
 
-public final class Block extends ASTNode {
+public final class Block extends Statement {
 
   private final List<Statement> statements;
 
