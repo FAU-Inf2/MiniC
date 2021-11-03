@@ -223,8 +223,11 @@ public final class SemanticAnalysis extends BaseASTVisitor<SymbolTable, Type> {
       }
     } else {
       if (this.expectedReturnType != AtomicType.VOID) {
-        throw InvalidProgramException.semanticallyInvalid(returnStatement.getPosition(),
-            String.format("has to return a value of type %s", this.expectedReturnType));
+        // check for injected bug
+        if (!Bugs.getInstance().isEnabled(Bug.MISSING_CHECK_RETURN_NON_VOID)) {
+          throw InvalidProgramException.semanticallyInvalid(returnStatement.getPosition(),
+              String.format("has to return a value of type %s", this.expectedReturnType));
+        }
       }
 
       return AtomicType.VOID;
