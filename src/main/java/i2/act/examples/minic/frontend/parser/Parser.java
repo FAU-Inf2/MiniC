@@ -324,6 +324,17 @@ public final class Parser {
     //   : EQUALS | LESS_THAN | GREATER_THAN | LESS_EQUALS | GREATER_EQUALS | NOT_EQUALS
     //   ;
 
+    // check for injected bug
+    {
+      if (Bugs.getInstance().isEnabled(Bug.MISSING_ALTERNATIVE_NOT_EQUALS)) {
+        return parseBinaryExpression(
+            lexer,
+            (_lexer) -> parseAddExpression(_lexer),
+            TokenKind.TK_EQUALS, TokenKind.TK_LESS_THAN, TokenKind.TK_GREATER_THAN,
+            TokenKind.TK_LESS_EQUALS, TokenKind.TK_GREATER_EQUALS);
+      }
+    }
+
     return parseBinaryExpression(
         lexer,
         (_lexer) -> parseAddExpression(_lexer),
