@@ -139,6 +139,7 @@ public final class Interpreter implements ASTVisitor<Interpreter.State, Interpre
     private final Map<Symbol, Value> globalVariables;
 
     private final List<Map<Symbol, Value>> stack;
+    private final List<Type> returnTypes;
 
     private final List<Value> output;
 
@@ -146,6 +147,7 @@ public final class Interpreter implements ASTVisitor<Interpreter.State, Interpre
       this.functions = new HashMap<Symbol, FunctionDeclaration>();
       this.globalVariables = new HashMap<Symbol, Value>();
       this.stack = new ArrayList<Map<Symbol, Value>>();
+      this.returnTypes = new ArrayList<Type>();
       this.output = new ArrayList<Value>();
     }
 
@@ -186,13 +188,23 @@ public final class Interpreter implements ASTVisitor<Interpreter.State, Interpre
       }
     }
 
-    public final void enterFunction(final Map<Symbol, Value> argumentValues) {
+    public final void enterFunction(final Map<Symbol, Value> argumentValues,
+        final Type returnType) {
       this.stack.add(argumentValues);
+      this.returnTypes.add(returnType);
     }
 
     public final void leaveFunction() {
       assert (!this.stack.isEmpty());
+      assert (!this.returnTypes.isEmpty());
+
       this.stack.remove(this.stack.size() - 1);
+      this.returnTypes.remove(this.returnTypes.size() - 1);
+    }
+
+    public final Type getReturnType() {
+      assert (!this.returnTypes.isEmpty());
+      return this.returnTypes.get(this.returnTypes.size() - 1);
     }
 
     public final void print(final Value value) {
@@ -328,7 +340,13 @@ public final class Interpreter implements ASTVisitor<Interpreter.State, Interpre
     }
 
     if (mainFunction != null) {
-      state.enterFunction(new HashMap<Symbol, Value>());
+      final Type returnType;
+      {
+        assert (mainFunction.getSymbol().getType() instanceof FunctionType);
+        returnType = ((FunctionType) mainFunction.getSymbol().getType()).getReturnType();
+      }
+
+      state.enterFunction(new HashMap<Symbol, Value>(), returnType);
       return visit(mainFunction, state);
     }
 
@@ -454,8 +472,11 @@ public final class Interpreter implements ASTVisitor<Interpreter.State, Interpre
   public final Value visit(final ReturnStatement returnStatement, final State state) {
     if (returnStatement.hasReturnValue()) {
       final Value returnValue = returnStatement.getReturnValue().accept(this, state);
-      throw new Return(returnValue);
+
+      assert (state.getReturnType() == AtomicType.INT);
+      throw new Return(toNumber(returnValue));
     } else {
+      assert (state.getReturnType() != AtomicType.VOID);
       throw new Return();
     }
   }
@@ -608,7 +629,7 @@ public final class Interpreter implements ASTVisitor<Interpreter.State, Interpre
         argumentValues.put(parameterSymbol, argumentValue);
       }
 
-      state.enterFunction(argumentValues);
+      state.enterFunction(argumentValues, calleeType.getReturnType());
       return visit(callee, state);
     }
   }
