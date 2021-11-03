@@ -509,6 +509,7 @@ public final class Interpreter implements ASTVisitor<Interpreter.State, Interpre
 
     // check for injected bug
     final boolean noShortcutOr = Bugs.getInstance().isEnabled(Bug.NO_SHORTCUT_OR);
+    final boolean noShortcutAnd = Bugs.getInstance().isEnabled(Bug.NO_SHORTCUT_AND);
 
     // OR and AND need special treatment due to shortcut evaluation
     if (operator == BinaryExpression.Operator.OR && !noShortcutOr) {
@@ -524,7 +525,7 @@ public final class Interpreter implements ASTVisitor<Interpreter.State, Interpre
         final BooleanValue rightValue = toBoolean(rightHandSide.accept(this, state));
         return rightValue;
       }
-    } else if (operator == BinaryExpression.Operator.AND) {
+    } else if (operator == BinaryExpression.Operator.AND && !noShortcutAnd) {
       final BooleanValue leftValue = toBoolean(leftHandSide.accept(this, state));
 
       if (isUndefined(leftValue)) {
@@ -551,6 +552,9 @@ public final class Interpreter implements ASTVisitor<Interpreter.State, Interpre
       switch (operator) {
         case OR: {
           return new BooleanValue(toBoolean(leftValue).value || toBoolean(rightValue).value);
+        }
+        case AND: {
+          return new BooleanValue(toBoolean(leftValue).value && toBoolean(rightValue).value);
         }
         case EQUALS: {
           final int compare = toNumber(leftValue).value.compareTo(toNumber(rightValue).value);
