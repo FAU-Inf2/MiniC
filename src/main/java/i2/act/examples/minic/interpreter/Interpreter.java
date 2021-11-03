@@ -578,7 +578,13 @@ public final class Interpreter implements ASTVisitor<Interpreter.State, Interpre
           return new NumberValue(toNumber(leftValue).value.multiply(toNumber(rightValue).value));
         }
         case DIV: {
-          return new NumberValue(toNumber(leftValue).value.divide(toNumber(rightValue).value));
+          final NumberValue divisor = toNumber(rightValue);
+
+          if (BigInteger.ZERO.equals(divisor.value)) {
+            return NumberValue.UNDEFINED;
+          }
+
+          return new NumberValue(toNumber(leftValue).value.divide(divisor.value));
         }
         default: {
           assert (false) : "unknown binary operator: " + operator;
