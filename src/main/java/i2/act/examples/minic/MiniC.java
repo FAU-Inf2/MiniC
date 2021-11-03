@@ -1,5 +1,7 @@
 package i2.act.examples.minic;
 
+import i2.act.examples.minic.bugs.Bug;
+import i2.act.examples.minic.bugs.Bugs;
 import i2.act.examples.minic.errors.InvalidProgramException;
 import i2.act.examples.minic.frontend.ast.Program;
 import i2.act.examples.minic.frontend.ast.visitors.DotGenerator;
@@ -25,6 +27,13 @@ public final class MiniC {
   private static final String OPTION_CHECK_UNDEFINED = "--checkUndef";
   private static final String OPTION_INTERPRET = "--interpret";
 
+  private static final String OPTION_BUGS = "--bugs";
+  private static final String OPTION_ALL_LEXER_BUGS = "--allLexerBugs";
+  private static final String OPTION_ALL_PARSER_BUGS = "--allParserBugs";
+  private static final String OPTION_ALL_ANALYSIS_BUGS = "--allAnalysisBugs";
+  private static final String OPTION_ALL_INTERPRETER_BUGS = "--allInterpreterBugs";
+  private static final String OPTION_ALL_BUGS = "--allBugs";
+
   static {
     argumentsParser = new ProgramArgumentsParser();
 
@@ -34,6 +43,13 @@ public final class MiniC {
 
     argumentsParser.addOption(OPTION_CHECK_UNDEFINED, false);
     argumentsParser.addOption(OPTION_INTERPRET, false);
+
+    argumentsParser.addOption(OPTION_BUGS, false, true, "<list of bugs>");
+    argumentsParser.addOption(OPTION_ALL_LEXER_BUGS, false);
+    argumentsParser.addOption(OPTION_ALL_PARSER_BUGS, false);
+    argumentsParser.addOption(OPTION_ALL_ANALYSIS_BUGS, false);
+    argumentsParser.addOption(OPTION_ALL_INTERPRETER_BUGS, false);
+    argumentsParser.addOption(OPTION_ALL_BUGS, false);
   }
 
   public static final void main(final String[] args) {
@@ -49,6 +65,12 @@ public final class MiniC {
 
     final String inputFileName = arguments.getOption(OPTION_INPUT_FILE);
     final String input = FileUtil.readFile(inputFileName);
+
+    enableBugs(arguments);
+
+    if (Bugs.getInstance().numberOfBugs() > 0) {
+      System.err.format("[i] enabled bugs: %s\n", Bugs.getInstance().toString());
+    }
 
     try {
       final Program program = Parser.parse(input);
@@ -93,6 +115,46 @@ public final class MiniC {
     System.err.println(message);
     usage();
     System.exit(1);
+  }
+
+  private static final void enableBugs(final ProgramArguments arguments) {
+    final Bugs bugs = Bugs.getInstance();
+
+    if (arguments.hasOption(OPTION_BUGS)) {
+      final String[] bugNames = arguments.getOption(OPTION_BUGS).split(",");
+
+      for (final String bugName : bugNames) {
+        final String trimmedName = bugName.trim();
+        final Bug bug = Bug.fromName(trimmedName);
+
+        if (bug == null) {
+          abort(String.format("[!] invalid bug name: '%s'", trimmedName));
+          assert (false);
+        }
+
+        bugs.enable(bug);
+      }
+    }
+
+    if (arguments.hasOption(OPTION_ALL_LEXER_BUGS)) {
+      bugs.enableAllOf(Bug.Category.LEXER);
+    }
+
+    if (arguments.hasOption(OPTION_ALL_PARSER_BUGS)) {
+      bugs.enableAllOf(Bug.Category.PARSER);
+    }
+
+    if (arguments.hasOption(OPTION_ALL_ANALYSIS_BUGS)) {
+      bugs.enableAllOf(Bug.Category.ANALYSIS);
+    }
+
+    if (arguments.hasOption(OPTION_ALL_INTERPRETER_BUGS)) {
+      bugs.enableAllOf(Bug.Category.INTERPRETER);
+    }
+
+    if (arguments.hasOption(OPTION_ALL_BUGS)) {
+      bugs.enableAll();
+    }
   }
 
 }
