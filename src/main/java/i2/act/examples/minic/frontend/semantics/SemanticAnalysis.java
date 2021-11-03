@@ -139,7 +139,10 @@ public final class SemanticAnalysis extends BaseASTVisitor<SymbolTable, Type> {
       }
     }
 
-    typeName.setType(returnType);
+    // check for injected bug
+    if (!Bugs.getInstance().isEnabled(Bug.MISSING_TYPE_TYPE_NAME)) {
+      typeName.setType(returnType);
+    }
 
     return returnType;
   }

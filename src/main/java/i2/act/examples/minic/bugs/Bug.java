@@ -22,6 +22,7 @@ public enum Bug {
 
   // analysis bugs
   MISSING_SYMBOL_CALLEE("missing_symbol_callee", Category.ANALYSIS),
+  MISSING_TYPE_TYPE_NAME("missing_type_type_name", Category.ANALYSIS),
   MISSING_CHECK_RETURN_VOID("missing_check_return_void", Category.ANALYSIS),
   MISSING_CHECK_RETURN_NON_VOID("missing_check_return_non_void", Category.ANALYSIS),
   WRONG_ORDER_SYMBOL_TABLE("wrong_order_symbol_table", Category.ANALYSIS);
