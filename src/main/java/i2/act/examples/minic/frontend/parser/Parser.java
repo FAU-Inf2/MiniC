@@ -1,5 +1,7 @@
 package i2.act.examples.minic.frontend.parser;
 
+import i2.act.examples.minic.bugs.Bug;
+import i2.act.examples.minic.bugs.Bugs;
 import i2.act.examples.minic.frontend.ast.*;
 import i2.act.examples.minic.frontend.info.SourcePosition;
 import i2.act.examples.minic.frontend.lexer.*;
@@ -217,6 +219,13 @@ public final class Parser {
         lexer.assertPop(TokenKind.TK_ELSE);
 
         final Block elseBlock = parseBlock(lexer);
+
+        // check for injected bug
+        {
+          if (Bugs.getInstance().isEnabled(Bug.MISSING_TREE_ELSE)) {
+            return new IfStatement(position, condition, thenBlock);
+          }
+        }
 
         return new IfStatement(position, condition, thenBlock, elseBlock);
       } else {
