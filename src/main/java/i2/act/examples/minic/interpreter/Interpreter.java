@@ -1,5 +1,7 @@
 package i2.act.examples.minic.interpreter;
 
+import i2.act.examples.minic.bugs.Bug;
+import i2.act.examples.minic.bugs.Bugs;
 import i2.act.examples.minic.errors.InvalidProgramException;
 import i2.act.examples.minic.frontend.ast.*;
 import i2.act.examples.minic.frontend.ast.visitors.ASTVisitor;
@@ -580,8 +582,11 @@ public final class Interpreter implements ASTVisitor<Interpreter.State, Interpre
         case DIV: {
           final NumberValue divisor = toNumber(rightValue);
 
-          if (BigInteger.ZERO.equals(divisor.value)) {
-            return NumberValue.UNDEFINED;
+          // check for injected bug
+          if (!Bugs.getInstance().isEnabled(Bug.DIV_BY_ZERO)) {
+            if (BigInteger.ZERO.equals(divisor.value)) {
+              return NumberValue.UNDEFINED;
+            }
           }
 
           return new NumberValue(toNumber(leftValue).value.divide(divisor.value));
