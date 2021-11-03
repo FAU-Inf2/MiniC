@@ -2,7 +2,7 @@ package i2.act.examples.minic.bugs;
 
 public enum Bug {
 
-  // lexer bugs 
+  // lexer bugs
   MISSING_TOKEN_ELSE("missing_token_else", Category.LEXER),
   MISSING_TOKEN_WHILE("missing_token_while", Category.LEXER),
   WRONG_TOKEN_IF("wrong_token_if", Category.LEXER),
@@ -11,14 +11,17 @@ public enum Bug {
   WRONG_REGEX_AND("wrong_regex_and", Category.LEXER),
   ADDITIONAL_SKIP("additional_skip", Category.LEXER),
 
-  // parser bugs 
+  // parser bugs
   MISSING_TREE_ELSE("missing_tree_else", Category.PARSER),
   MISSING_ALTERNATIVE_NOT_EQUALS("missing_alternative_not_equals", Category.PARSER),
   MISSING_ALTERNATIVE_CALL_STMT("missing_alternative_call_stmt", Category.PARSER),
   ADDITIONAL_SEMICOLON_FUNCTION("additional_semicolon_function", Category.PARSER),
   MISSING_COMMA_ARGUMENTS("missing_comma_arguments", Category.PARSER),
   SWAPPED_OPERANDS_PLUS("swapped_operands_plus", Category.PARSER),
-  RIGHT_ASSOCIATIVE_ADD_EXPR("right_associative_add_expr", Category.PARSER);
+  RIGHT_ASSOCIATIVE_ADD_EXPR("right_associative_add_expr", Category.PARSER),
+
+  // analysis bugs
+  MISSING_SYMBOL_CALLEE("missing_symbol_callee", Category.ANALYSIS);
 
   // ===============================================================================================
 

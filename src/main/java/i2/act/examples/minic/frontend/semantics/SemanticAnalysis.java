@@ -1,5 +1,7 @@
 package i2.act.examples.minic.frontend.semantics;
 
+import i2.act.examples.minic.bugs.Bug;
+import i2.act.examples.minic.bugs.Bugs;
 import i2.act.examples.minic.errors.InvalidProgramException;
 import i2.act.examples.minic.frontend.ast.*;
 import i2.act.examples.minic.frontend.ast.visitors.BaseASTVisitor;
@@ -278,6 +280,13 @@ public final class SemanticAnalysis extends BaseASTVisitor<SymbolTable, Type> {
   public final Type visit(final FunctionCall functionCall, final SymbolTable symbolTable) {
     final Identifier callee = functionCall.getCallee();
     final Type calleeType = callee.accept(this, symbolTable);
+
+    // check for injected bug
+    {
+      if (Bugs.getInstance().isEnabled(Bug.MISSING_SYMBOL_CALLEE)) {
+        callee.setSymbol(null);
+      }
+    }
 
     if (!(calleeType instanceof FunctionType)) {
       throw InvalidProgramException.semanticallyInvalid(functionCall.getPosition(),
