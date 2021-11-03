@@ -122,17 +122,26 @@ public final class SemanticAnalysis extends BaseASTVisitor<SymbolTable, Type> {
   public final Type visit(final TypeName typeName, final SymbolTable symbolTable) {
     final Token typeNameToken = typeName.getTypeNameToken();
 
-    switch (typeNameToken.kind) {
-      case TK_INT: {
-        return AtomicType.INT;
-      }
-      case TK_VOID: {
-        return AtomicType.VOID;
-      }
-      default: {
-        throw new RuntimeException(String.format("unknown type name: '%s'", typeNameToken.kind));
+    final Type returnType;
+    {
+      switch (typeNameToken.kind) {
+        case TK_INT: {
+          returnType = AtomicType.INT;
+          break;
+        }
+        case TK_VOID: {
+          returnType = AtomicType.VOID;
+          break;
+        }
+        default: {
+          throw new RuntimeException(String.format("unknown type name: '%s'", typeNameToken.kind));
+        }
       }
     }
+
+    typeName.setType(returnType);
+
+    return returnType;
   }
 
   @Override
