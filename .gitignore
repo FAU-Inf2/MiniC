@@ -3,3 +3,7 @@
 
 build/*
 .gradle/*
+
+starsmith/out/classes
+starsmith/out/runtime/*.class
+starsmith/out/*.java
