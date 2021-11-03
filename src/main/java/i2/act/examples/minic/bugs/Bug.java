@@ -28,7 +28,8 @@ public enum Bug {
   WRONG_ORDER_SYMBOL_TABLE("wrong_order_symbol_table", Category.ANALYSIS),
 
   // interpreter bugs
-  DIV_BY_ZERO("div_by_zero", Category.INTERPRETER);
+  DIV_BY_ZERO("div_by_zero", Category.INTERPRETER),
+  NO_SHORTCUT_OR("no_shortcut_or", Category.INTERPRETER);
 
   // ===============================================================================================
 
