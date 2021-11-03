@@ -412,6 +412,14 @@ public final class Lexer {
       }
     }
 
+    // check for injected bug
+    {
+      if (Bugs.getInstance().isEnabled(Bug.ADDITIONAL_SKIP)) {
+        ++this.lookaheadPosition;
+        ++this.lookaheadColumn;
+      }
+    }
+
     return builder.toString();
   }
 

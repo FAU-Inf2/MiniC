@@ -7,7 +7,8 @@ public enum Bug {
   WRONG_TOKEN_IF("wrong_token_if", Category.LEXER),
   WRONG_TOKEN_PLUS("wrong_token_plus", Category.LEXER),
   NO_EQUALS_TOKEN("no_equals_token", Category.LEXER),
-  WRONG_REGEX_AND("wrong_regex_and", Category.LEXER);
+  WRONG_REGEX_AND("wrong_regex_and", Category.LEXER),
+  ADDITIONAL_SKIP("additional_skip", Category.LEXER);
 
   // ===============================================================================================
 
