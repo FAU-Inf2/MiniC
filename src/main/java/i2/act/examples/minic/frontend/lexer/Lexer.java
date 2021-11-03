@@ -248,6 +248,13 @@ public final class Lexer {
           return new Token(TokenKind.TK_RBRACE, begin);
         }
         case '+': {
+          // check for injected bug
+          {
+            if (Bugs.getInstance().isEnabled(Bug.WRONG_TOKEN_PLUS)) {
+              return new Token(TokenKind.TK_MUL, begin);
+            }
+          }
+
           return new Token(TokenKind.TK_ADD, begin);
         }
         case '-': {
