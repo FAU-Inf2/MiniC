@@ -2,10 +2,7 @@ package i2.act.examples.minic.bugs;
 
 public enum Bug {
 
-  TODO_LEXER("todo_lexer", Category.LEXER),
-  TODO_PARSER("todo_parser", Category.PARSER),
-  TODO_ANALYSIS("todo_analysis", Category.ANALYSIS),
-  TODO_INTERPRETER("todo_interpreter", Category.INTERPRETER);
+  MISSING_TOKEN_ELSE("missing_token_else", Category.LEXER);
 
   // ===============================================================================================
 

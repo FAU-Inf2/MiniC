@@ -1,5 +1,7 @@
 package i2.act.examples.minic.frontend.lexer;
 
+import i2.act.examples.minic.bugs.Bug;
+import i2.act.examples.minic.bugs.Bugs;
 import i2.act.examples.minic.errors.InvalidProgramException;
 import i2.act.examples.minic.frontend.info.SourcePosition;
 
@@ -294,6 +296,10 @@ public final class Lexer {
           }
 
           final String tokenText = parseCharacterSequence(matches);
+
+          if (Bugs.getInstance().isEnabled(Bug.MISSING_TOKEN_ELSE) && tokenText.equals("else")) {
+            continue skip;
+          }
 
           switch (tokenText) {
             case "void": {
