@@ -297,8 +297,18 @@ public final class Lexer {
 
           final String tokenText = parseCharacterSequence(matches);
 
-          if (Bugs.getInstance().isEnabled(Bug.MISSING_TOKEN_ELSE) && tokenText.equals("else")) {
-            continue skip;
+          // check for injected bug
+          {
+            if (Bugs.getInstance().isEnabled(Bug.MISSING_TOKEN_ELSE) && tokenText.equals("else")) {
+              continue skip;
+            }
+
+            if (Bugs.getInstance().isEnabled(Bug.WRONG_TOKEN_IF) && tokenText.equals("if")) {
+              final SourcePosition end = new SourcePosition(
+                  this.lookaheadPosition, this.lookaheadLine, this.lookaheadColumn);
+
+              return new Token(TokenKind.TK_IDENTIFIER, begin, end, tokenText);
+            }
           }
 
           switch (tokenText) {
