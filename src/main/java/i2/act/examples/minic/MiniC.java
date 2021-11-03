@@ -136,8 +136,10 @@ public final class MiniC {
   private static final void enableBugs(final ProgramArguments arguments) {
     final Bugs bugs = Bugs.getInstance();
 
-    if (arguments.hasOption(OPTION_BUGS)) {
-      final String[] bugNames = arguments.getOption(OPTION_BUGS).split(",");
+    final String bugNameList = arguments.getOptionOr(OPTION_BUGS, "");
+
+    if (!bugNameList.trim().isEmpty()) {
+      final String[] bugNames = bugNameList.split(",");
 
       for (final String bugName : bugNames) {
         final String trimmedName = bugName.trim();
