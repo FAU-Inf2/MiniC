@@ -476,7 +476,7 @@ public final class Interpreter implements ASTVisitor<Interpreter.State, Interpre
       assert (state.getReturnType() == AtomicType.INT);
       throw new Return(toNumber(returnValue));
     } else {
-      assert (state.getReturnType() != AtomicType.VOID);
+      assert (state.getReturnType() == AtomicType.VOID);
       throw new Return();
     }
   }
