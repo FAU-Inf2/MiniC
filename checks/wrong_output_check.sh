@@ -24,6 +24,20 @@ if [ ! -f "$INPUT_PROGRAM" ] ; then
   exit 0 # sic
 fi
 
+# check for undefined behavior
+timeout "$TIMEOUT" "$MINIC" --in "$INPUT_PROGRAM" --checkUndef 2> /dev/null > /dev/null
+exit_code="$?"
+
+if [ "$exit_code" -eq 133 ] ; then
+  echo "[i] program contains undefined behavior"
+  exit 0
+fi
+
+if [ "$exit_code" -ne 0 ] ; then
+  echo "[i] program is invalid"
+  exit 0
+fi
+
 # reference implementation
 reference_output=$(\
   trap "" PIPE ; \
