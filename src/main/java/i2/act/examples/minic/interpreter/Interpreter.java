@@ -551,6 +551,12 @@ public final class Interpreter implements ASTVisitor<Interpreter.State, Interpre
       final Value rightValue = rightHandSide.accept(this, state);
 
       if (isUndefined(leftValue) || isUndefined(rightValue)) {
+        // NOTE: this is only relevant if the 'no_shortcut_or' bug is enabled
+        if (operator == BinaryExpression.Operator.OR
+            && (isTrue(toBoolean(leftValue)) || isTrue(toBoolean(rightValue)))) {
+          return BooleanValue.TRUE;
+        }
+
         final Type resultType = binaryExpression.getOperator().resultType;
 
         assert (resultType instanceof AtomicType);
