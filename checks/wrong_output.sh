@@ -55,7 +55,7 @@ fi
 # implementation under test
 test_output=$(\
   trap "" PIPE ; \
-  timeout "$TIMEOUT" "$MINIC" --in "$INPUT_PROGRAM" --interpret $@ 2> /dev/null | \
+  timeout "$TIMEOUT" "$MINIC" --in "$INPUT_PROGRAM" --interpret "$@" 2> /dev/null | \
     head -c $((MAX_SIZE + 1)) ; \
   exit ${PIPESTATUS[0]})
 

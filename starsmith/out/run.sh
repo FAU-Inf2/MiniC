@@ -23,4 +23,4 @@ fi
 
 STARSMITH_JAR="$(realpath "$STARSMITH_JAR")"
 
-java -ea -cp "$STARSMITH_JAR":"$THIS_DIR/classes":"$THIS_DIR" $@
+java -ea -cp "$STARSMITH_JAR":"$THIS_DIR/classes":"$THIS_DIR" "$@"

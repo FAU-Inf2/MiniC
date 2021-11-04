@@ -24,7 +24,7 @@ if [ ! -f "$INPUT_PROGRAM" ] ; then
 fi
 
 # implementation under test
-timeout "$TIMEOUT" "$MINIC" --in "$INPUT_PROGRAM" $@ 2> /dev/null > /dev/null
+timeout "$TIMEOUT" "$MINIC" --in "$INPUT_PROGRAM" "$@" 2> /dev/null > /dev/null
 exit_code="$?"
 
 case "$exit_code" in
