@@ -11,7 +11,10 @@ class Program {
       ${main : MainDeclaration}") {
     loc div_symbol =
         (Symbol:create "div" (Type:functionType (Type:intType) (Type:intType) (Type:intType)) this);
-    decls.symbols_before = (SymbolTable:define (SymbolTable:empty) .div_symbol);
+    loc print_symbol =
+        (Symbol:create "print" (Type:functionType (Type:voidType) (Type:intType)) this);
+
+    decls.symbols_before = (SymbolTable:predefined .div_symbol .print_symbol);
     main.symbols_before = decls.symbols_after;
   }
 

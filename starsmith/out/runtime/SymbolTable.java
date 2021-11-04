@@ -39,6 +39,19 @@ public final class SymbolTable {
     return emptySymbolTable;
   }
 
+  public static final SymbolTable predefined(final Symbol... symbols) {
+    final SymbolTable symbolTable = empty();
+
+    final Map<String, Symbol> globalScope = symbolTable.scopes.get(symbolTable.scopes.size() - 1);
+
+    for (final Symbol symbol : symbols) {
+      globalScope.put(symbol.name, symbol);
+      symbolTable.definedSymbols.add(symbol);
+    }
+
+    return symbolTable;
+  }
+
   public static final SymbolTable enterScope(final SymbolTable symbolTable) {
     final SymbolTable newSymbolTable = symbolTable.clone();
     newSymbolTable.scopes.add(new LinkedHashMap<String, Symbol>());
