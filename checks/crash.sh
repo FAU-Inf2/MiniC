@@ -6,7 +6,7 @@ readonly THIS_DIR="$(dirname "$0")"
 readonly MINIC="$THIS_DIR/../run.sh"
 
 if [[ $# -lt 1 || ! -f "$1" ]] ; then
-  echo "USAGE: $0 <program path>" >&2
+  echo "USAGE: $0 PROGRAM_PATH [MINIC_OPTIONS...]" >&2
   exit 0 # sic
 fi
 
