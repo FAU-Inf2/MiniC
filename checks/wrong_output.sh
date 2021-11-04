@@ -35,7 +35,7 @@ reference_exit_code=$?
 reference_size="${#reference_output}"
 
 if [ "$reference_exit_code" -ne 0 ] ; then
-  case "$exit_code" in
+  case "$reference_exit_code" in
   "124")
     echo "[i] timeout in reference implementation" >&2
     ;;
