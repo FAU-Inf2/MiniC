@@ -7,3 +7,4 @@ build/*
 starsmith/out/classes
 starsmith/out/runtime/*.class
 starsmith/out/*.java
+starsmith/test/
