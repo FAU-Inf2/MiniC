@@ -1,6 +1,6 @@
 #!/bin/bash
 
-readonly TIMEOUT=10 # seconds
+readonly TIMEOUT=3 # seconds
 readonly MAX_SIZE=1024 # byte
 
 readonly THIS_DIR="$(dirname "$0")"

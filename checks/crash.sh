@@ -1,6 +1,6 @@
 #!/bin/bash
 
-readonly TIMEOUT=10 # seconds
+readonly TIMEOUT=3 # seconds
 
 readonly THIS_DIR="$(dirname "$0")"
 readonly MINIC="$THIS_DIR/../run.sh"
