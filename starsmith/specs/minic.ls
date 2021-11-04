@@ -231,20 +231,20 @@ class Statement {
     this.symbols_after = this.symbols_before;
   }
 
-  @weight(12)
+  @weight(20)
   if ("if (${condition : Expression}) ${then : Block}") {
     condition.expected_type = (Type:boolType);
     this.symbols_after = this.symbols_before;
   }
 
-  @weight(12)
+  @weight(20)
   if_else ("if (${condition : Expression}) ${then : Block} else ${else : Block}") {
     condition.expected_type = (Type:boolType);
     this.symbols_after =
         (SymbolTable:leaveScope (SymbolTable:intersect then.symbols_at_end else.symbols_at_end));
   }
 
-  @weight(5)
+  @weight(3)
   while ("while (${condition : Expression}) ${body : Block}") {
     condition.expected_type = (Type:boolType);
     this.symbols_after = this.symbols_before;
@@ -255,7 +255,7 @@ class Statement {
     this.symbols_after = this.symbols_before;
   }
 
-  @weight(12)
+  @weight(18)
   var_decl ("${decl : VariableDeclaration};") {
     # intentionally left blank
   }
@@ -314,7 +314,7 @@ class Expression {
     this.types_match = (Type:assignable (Type:boolType) this.expected_type);
   }
 
-  @weight(5)
+  @weight(2)
   no_or ("${expr : AndExpression}") {
     this.types_match = true;
   }
@@ -333,7 +333,7 @@ class AndExpression {
     this.types_match = (Type:assignable (Type:boolType) this.expected_type);
   }
 
-  @weight(5)
+  @weight(2)
   no_and ("${expr : CompareExpression}") {
     this.types_match = true;
   }
