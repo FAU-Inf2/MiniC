@@ -28,13 +28,19 @@ fi
 timeout "$TIMEOUT" "$MINIC" --in "$INPUT_PROGRAM" --checkUndef 2> /dev/null > /dev/null
 exit_code="$?"
 
-if [ "$exit_code" -eq 133 ] ; then
-  echo "[i] program contains undefined behavior"
-  exit 0
-fi
-
 if [ "$exit_code" -ne 0 ] ; then
-  echo "[i] program is invalid"
+  case "$exit_code" in
+  "124")
+    echo "[i] timeout in reference implementation" >&2
+    ;;
+  "133")
+    echo "[i] program contains undefined behavior" >&2
+    ;;
+  *)
+    echo "[i] program is invalid" >&2
+    ;;
+  esac
+
   exit 0
 fi
 
@@ -48,13 +54,21 @@ reference_output=$(\
 reference_exit_code=$?
 reference_size="${#reference_output}"
 
-if [ "$reference_exit_code" -eq 124 ] ; then
-  echo "[i] timeout in reference implementation"
+if [ "$reference_exit_code" -ne 0 ] ; then
+  case "$exit_code" in
+  "124")
+    echo "[i] timeout in reference implementation" >&2
+    ;;
+  *)
+    echo "[i] program is invalid" >&2
+    ;;
+  esac
+
   exit 0
 fi
 
-if [ "$reference_exit_code" -ne 0 ] || [ "$reference_size" -gt "$MAX_SIZE" ]  ; then
-  echo "[i] program is invalid"
+if [ "$reference_size" -gt "$MAX_SIZE" ]  ; then
+  echo "[i] too much output" >&2
   exit 0
 fi
 

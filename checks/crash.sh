@@ -27,13 +27,13 @@ fi
 timeout "$TIMEOUT" "$MINIC" --in "$INPUT_PROGRAM" $@ 2> /dev/null > /dev/null
 exit_code="$?"
 
-if [ "$exit_code" -eq 124 ] ; then
-  # timeout
+case "$exit_code" in
+"124")
+  echo "[i] timeout" >&2
   exit 0
-fi
-
-if [ "$exit_code" -eq 1 ] ; then
-  exit 1 # crash
-else
-  exit 0 # no crash
-fi
+  ;;
+"1")
+  echo "[!] crash" >&2
+  exit 1
+  ;;
+esac

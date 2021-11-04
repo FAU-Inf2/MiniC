@@ -28,6 +28,15 @@ timeout "$TIMEOUT" "$MINIC" --in "$INPUT_PROGRAM" 2> /dev/null > /dev/null
 exit_code="$?"
 
 if [ "$exit_code" -ne 0 ] ; then
+  case "$exit_code" in
+  "124")
+    echo "[i] timeout in reference implementation" >&2
+    ;;
+  *)
+    echo "[i] program is invalid" >&2
+    ;;
+  esac
+
   exit 0
 fi
 
@@ -36,7 +45,6 @@ timeout "$TIMEOUT" "$MINIC" --in "$INPUT_PROGRAM" $@ 2> /dev/null > /dev/null
 exit_code="$?"
 
 if [ "$exit_code" -ne 0 ] ; then
-  exit 1 # rejection, crash, or timeout
-else
-  exit 0 # no crash
+  echo "[i] rejected" >&2
+  exit 1
 fi
