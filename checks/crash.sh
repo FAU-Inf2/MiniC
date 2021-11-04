@@ -5,13 +5,23 @@ readonly TIMEOUT=10 # seconds
 readonly THIS_DIR="$(dirname "$0")"
 readonly MINIC="$THIS_DIR/../run.sh"
 
-if [[ $# -lt 1 || ! -f "$1" ]] ; then
-  echo "USAGE: $0 PROGRAM_PATH [MINIC_OPTIONS...]" >&2
+function usage {
+  echo "USAGE: $0 [MINIC_OPTIONS...] PROGRAM_PATH" >&2
+}
+
+if [ $# -lt 1 ] ; then
+  usage
   exit 0 # sic
 fi
 
-readonly INPUT_PROGRAM="$1"
-shift
+# extract path to input program (last argument)
+readonly INPUT_PROGRAM="${@: -1}"
+set -- "${@:1:$(($#-1))}"
+
+if [ ! -f "$INPUT_PROGRAM" ] ; then
+  usage
+  exit 0 # sic
+fi
 
 # implementation under test
 timeout "$TIMEOUT" "$MINIC" --in "$INPUT_PROGRAM" $@ 2> /dev/null > /dev/null
