@@ -212,7 +212,7 @@ class Statement {
 
   inh return_type : Type;
 
-  @weight(32)
+  @weight(100)
   assign ("${lhs : UseIdentifier} = ${rhs : Expression};") {
     lhs.expected_type = (Type:intType);
     lhs.only_defined = false;
@@ -222,26 +222,26 @@ class Statement {
     this.symbols_after = (SymbolTable:setDefined this.symbols_before lhs.symbol);
   }
 
-  @weight(4)
+  @weight(12)
   func_call ("${call : FunctionCall};") {
     call.expected_return_type = (Type:anyPrimitiveType);
     this.symbols_after = this.symbols_before;
   }
 
-  @weight(4)
+  @weight(12)
   if ("if (${condition : Expression}) ${then : Block}") {
     condition.expected_type = (Type:boolType);
     this.symbols_after = this.symbols_before;
   }
 
-  @weight(4)
+  @weight(12)
   if_else ("if (${condition : Expression}) ${then : Block} else ${else : Block}") {
     condition.expected_type = (Type:boolType);
     this.symbols_after =
         (SymbolTable:leaveScope (SymbolTable:intersect then.symbols_at_end else.symbols_at_end));
   }
 
-  @weight(2)
+  @weight(5)
   while ("while (${condition : Expression}) ${body : Block}") {
     condition.expected_type = (Type:boolType);
     this.symbols_after = this.symbols_before;
@@ -252,12 +252,12 @@ class Statement {
     this.symbols_after = this.symbols_before;
   }
 
-  @weight(4)
+  @weight(12)
   var_decl ("${decl : VariableDeclaration};") {
     # intentionally left blank
   }
 
-  @weight(2)
+  @weight(6)
   block ("${block : Block}") {
     this.symbols_after = (SymbolTable:leaveScope block.symbols_at_end);
   }
@@ -411,7 +411,7 @@ class Factor {
 
   grd types_match;
 
-  @weight(2)
+  @weight(6)
   call ("${call : FunctionCall}") {
     this.types_match = true;
     call.expected_return_type = this.expected_type;
