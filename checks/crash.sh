@@ -13,7 +13,8 @@ fi
 readonly INPUT_PROGRAM="$1"
 shift
 
-timeout "$TIMEOUT" "$MINIC" --in "$INPUT_PROGRAM" --interpret $@ 2> /dev/null > /dev/null
+# implementation under test
+timeout "$TIMEOUT" "$MINIC" --in "$INPUT_PROGRAM" $@ 2> /dev/null > /dev/null
 exit_code="$?"
 
 if [ "$exit_code" -eq 124 ] ; then
