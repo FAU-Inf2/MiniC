@@ -16,7 +16,6 @@ public final class SymbolTable {
 
   private SymbolTable() {
     this.definedSymbols = new LinkedHashSet<Symbol>();
-
     this.scopes = new ArrayList<Map<String, Symbol>>();
   }
 
@@ -47,20 +46,60 @@ public final class SymbolTable {
     return newSymbolTable;
   }
 
-  public static final SymbolTable declare(final SymbolTable symbolTable,
-      final String name, final Type type) {
-    final Symbol symbol = Symbol.create(name, type);
+  public static final SymbolTable leaveScope(final SymbolTable symbolTable) {
+    final SymbolTable newSymbolTable = symbolTable.clone();
 
+    final Map<String, Symbol> leftScope =
+        newSymbolTable.scopes.get(newSymbolTable.scopes.size() - 1);
+
+    for (final Symbol symbol : leftScope.values()) {
+      newSymbolTable.definedSymbols.remove(symbol);
+    }
+
+    newSymbolTable.scopes.remove(newSymbolTable.scopes.size() - 1);
+
+    return newSymbolTable;
+  }
+
+  public static final SymbolTable intersect(final SymbolTable first, final SymbolTable second) {
+    assert (first.scopes.size() == second.scopes.size());
+
+    final SymbolTable newSymbolTable = new SymbolTable();
+
+    for (int scopeIndex = 0; scopeIndex < first.scopes.size(); ++scopeIndex) {
+      final Map<String, Symbol> firstScope = first.scopes.get(scopeIndex);
+      final Map<String, Symbol> secondScope = second.scopes.get(scopeIndex);
+
+      final Map<String, Symbol> newScope = new LinkedHashMap<>();
+      newSymbolTable.scopes.add(newScope);
+
+      for (final Map.Entry<String, Symbol> entry : firstScope.entrySet()) {
+        final String name = entry.getKey();
+        final Symbol symbol = entry.getValue();
+
+        if (secondScope.containsKey(name) && symbol.equals(secondScope.get(name))) {
+          newScope.put(name, symbol);
+        }
+      }
+    }
+
+    for (final Symbol symbol : first.definedSymbols) {
+      if (second.definedSymbols.contains(symbol)) {
+        newSymbolTable.definedSymbols.add(symbol);
+      }
+    }
+
+    return newSymbolTable;
+  }
+
+  public static final SymbolTable declare(final SymbolTable symbolTable, final Symbol symbol) {
     final SymbolTable newSymbolTable = symbolTable.clone();
     newSymbolTable.scopes.get(newSymbolTable.scopes.size() - 1).put(symbol.name, symbol);
 
     return newSymbolTable;
   }
 
-  public static final SymbolTable define(final SymbolTable symbolTable,
-      final String name, final Type type) {
-    final Symbol symbol = Symbol.create(name, type);
-
+  public static final SymbolTable define(final SymbolTable symbolTable, final Symbol symbol) {
     final SymbolTable newSymbolTable = symbolTable.clone();
     newSymbolTable.scopes.get(newSymbolTable.scopes.size() - 1).put(symbol.name, symbol);
     newSymbolTable.definedSymbols.add(symbol);
@@ -113,7 +152,8 @@ public final class SymbolTable {
   public static final EmbeddedCode printDefined(final SymbolTable symbolTable) {
     final EmbeddedCode code = EmbeddedCode.create();
 
-    for (final Symbol definedVariable : SymbolTable.visible(symbolTable, Type.integer(), true)) {
+    final List<Symbol> visible = SymbolTable.visible(symbolTable, Type.intType(), true);
+    for (final Symbol definedVariable : visible) {
       code.print("print(" + definedVariable.name + ");");
       code.newline();
     }
