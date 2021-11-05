@@ -42,7 +42,7 @@ public final class MiniC {
     argumentsParser.addOption(OPTION_INPUT_FILE, true, true, "<path to input file>");
 
     argumentsParser.addOption(OPTION_PRETTY_PRINT, false, true, "<file name>");
-    argumentsParser.addOption(OPTION_TO_DOT, false);
+    argumentsParser.addOption(OPTION_TO_DOT, false, true, "<file name>");
 
     argumentsParser.addOption(OPTION_CHECK_UNDEFINED, false);
     argumentsParser.addOption(OPTION_INTERPRET, false);
@@ -92,9 +92,16 @@ public final class MiniC {
       }
 
       if (arguments.hasOption(OPTION_TO_DOT)) {
-        final SafeWriter writer = SafeWriter.openStdOut();
+        final String fileNameDot = arguments.getOption(OPTION_TO_DOT);
+
+        final SafeWriter writer = SafeWriter.openFile(fileNameDot);
         DotGenerator.printDot(program, writer);
-        writer.flush();
+
+        if ("-".equals(fileNameDot)) {
+          writer.flush();
+        } else {
+          writer.close();
+        }
       }
 
       SemanticAnalysis.analyze(program);
