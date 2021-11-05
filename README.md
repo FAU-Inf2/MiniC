@@ -73,7 +73,7 @@ or a `while` loop) may use the following binary operators (in order of increasin
 | Precedence | Operators                        | Associativity | Operand Types  | Result Type |
 | :---:      | :---                             | :---:         | :---:          | :---:       |
 | 0          | `\|\|` (shortcut evaluation)     | left          | `bool`, `bool` | `bool`      |
-| 1          | `&&` (shortcut evalaution)       | left          | `bool`, `bool` | `bool`      |
+| 1          | `&&` (shortcut evaluation)       | left          | `bool`, `bool` | `bool`      |
 | 2          | `==`, `<`, `<=`, `>`, `>=`, `!=` | left          | `int`, `int`   | `bool`      |
 | 3          | `+`, `-`                         | left          | `int`, `int`   | `int`       |
 | 4          | `*`, `/`                         | left          | `int`, `int`   | `int`       |
