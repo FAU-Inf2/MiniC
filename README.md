@@ -72,7 +72,7 @@ or a `while` loop) may use the following binary operators (in order of increasin
 
 | Precedence | Operators                        | Associativity | Operand Types  | Result Type |
 | :---:      | :---                             | :---:         | :---:          | :---:       |
-| 0          | `||` (shortcut evaluation)       | left          | `bool`, `bool` | `bool`      |
+| 0          | `\|\|` (shortcut evaluation)     | left          | `bool`, `bool` | `bool`      |
 | 1          | `&&` (shortcut evalaution)       | left          | `bool`, `bool` | `bool`      |
 | 2          | `==`, `<`, `<=`, `>`, `>=`, `!=` | left          | `int`, `int`   | `bool`      |
 | 3          | `+`, `-`                         | left          | `int`, `int`   | `int`       |
@@ -152,7 +152,7 @@ The *MiniC* implementation contains several bugs that can be enabled via the com
 | `missing_check_return_non_void`  | Analysis | If enabled, the semantic analysis does not enforce that a value is returned from non-`void` functions. |
 | `wrong_order_symbol_table`       | Analysis | If enabled, the semantic analysis traverses the symbol table in the wrong order (and may therefore falsely choose a shadowed symbol). |
 | `div_by_zero`                    | Interp.  | If enabled, the interpreter crashes when encountering a division by zero. |
-| `no_shortcut_or`                 | Interp.  | If enabled, the interpreter does not perform a shortcut evaluation for `||` operations.  |
+| `no_shortcut_or`                 | Interp.  | If enabled, the interpreter does not perform a shortcut evaluation for `\|\|` operations. |
 | `no_shortcut_and`                | Interp.  | If enabled, the interpreter does not perform a shortcut evaluation for `&&` operations. |
 | `missing_init_globals`           | Interp.  | If enabled, the interpreter does not initialize the global variables. |
 | `wrong_shift_mul`                | Interp.  | If enabled, the interpreter computes the wrong result for mutiplications where the right operand is a power of two. |
