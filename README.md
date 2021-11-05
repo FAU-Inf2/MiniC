@@ -185,14 +185,14 @@ kinds of bugs. These scripts work as follows:
 
 The following exemplary scripts are provided in the `checks/` subdirectory:
 
--- `crash.sh`: Checks if the "implementation under test" crashes (i.e., if it terminates with exit
-  code 1).
--- `rejection.sh`: Checks if the "implementation under test" rejects the input program.
--- `rejection_check.sh`: Checks if the "implementation under test" rejects the input program, but
-  only if the "reference implementation" accepts the input program.
--- `wrong_output.sh`: Checks if the "implementation under test" produces a different program output
-  or exit code than the "reference implementation".
--- `wrong_output_check.sh`: Checks if the "implementation under test" produces a different program
+- `crash.sh`: Checks if the "implementation under test" crashes (i.e., if it terminates with exit
+ code 1).
+- `rejection.sh`: Checks if the "implementation under test" rejects the input program.
+- `rejection_check.sh`: Checks if the "implementation under test" rejects the input program, but
+ only if the "reference implementation" accepts the input program.
+- `wrong_output.sh`: Checks if the "implementation under test" produces a different program output
+ or exit code than the "reference implementation".
+- `wrong_output_check.sh`: Checks if the "implementation under test" produces a different program
   output or exit code than the "reference implementation", but only if the "reference
   implementation" determines that the input program is free of undefined behavior.
 
