@@ -15,7 +15,7 @@ public enum Bug {
   MISSING_TREE_ELSE("missing_tree_else", Category.PARSER),
   MISSING_ALTERNATIVE_NOT_EQUALS("missing_alternative_not_equals", Category.PARSER),
   MISSING_ALTERNATIVE_CALL_STMT("missing_alternative_call_stmt", Category.PARSER),
-  ADDITIONAL_SEMICOLON_FUNCTION("additional_semicolon_function", Category.PARSER),
+  ADDITIONAL_SEMICOLON_RETURN("additional_semicolon_return", Category.PARSER),
   MISSING_COMMA_ARGUMENTS("missing_comma_arguments", Category.PARSER),
   SWAPPED_OPERANDS_PLUS("swapped_operands_plus", Category.PARSER),
   RIGHT_ASSOCIATIVE_ADD_EXPR("right_associative_add_expr", Category.PARSER),

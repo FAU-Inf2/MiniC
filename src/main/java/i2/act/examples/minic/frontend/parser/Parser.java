@@ -75,13 +75,6 @@ public final class Parser {
 
     final Block body = parseBlock(lexer);
 
-    // check for injected bug
-    {
-      if (Bugs.getInstance().isEnabled(Bug.ADDITIONAL_SEMICOLON_FUNCTION)) {
-        lexer.assertPop(TokenKind.TK_SEMICOLON);
-      }
-    }
-
     return new FunctionDeclaration(position, typeName, name, parameters, body);
   }
 
@@ -267,6 +260,13 @@ public final class Parser {
         final Expression returnValue = parseExpression(lexer);
 
         lexer.assertPop(TokenKind.TK_SEMICOLON);
+
+        // check for injected bug
+        {
+          if (Bugs.getInstance().isEnabled(Bug.ADDITIONAL_SEMICOLON_RETURN)) {
+            lexer.assertPop(TokenKind.TK_SEMICOLON);
+          }
+        }
 
         return new ReturnStatement(position, returnValue);
       }
