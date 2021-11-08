@@ -136,8 +136,8 @@ The *MiniC* implementation contains several bugs that can be enabled via the com
 | `missing_token_while`            | Lexer    | If enabled, the lexer still recognizes `while` tokens, but does not add them to the token stream. |
 | `wrong_token_if`                 | Lexer    | If enabled, the lexer falsely recognizes `if` tokens as identifiers. |
 | `wrong_token_plus`               | Lexer    | If enabled, the lexer falsely recognizes `+` tokens as `*` tokens. |
-| `no_equals_token`                | Lexer    | If enabled, the lexer does no recognize `==` tokens. |
-| `wrong_regex_and`                | Lexer    | If enabled, the lexer tries to match `&|` instead of `&&`. |
+| `no_equals_token`                | Lexer    | If enabled, the lexer does not recognize `==` tokens. |
+| `wrong_regex_and`                | Lexer    | If enabled, the lexer tries to match `&\|` instead of `&&`. |
 | `additional_skip`                | Lexer    | If enabled, the lexer falsely consumes one character too much when lexing numbers and identifiers.  |
 | `missing_tree_else`              | Parser   | If enabled, the parser still parses `else` branches, but does not add them to the AST. |
 | `missing_alternative_not_equals` | Parser   | If enabled, the parser does not accept the `!=` operator in comparisons. |
