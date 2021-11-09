@@ -79,7 +79,8 @@ or a `while` loop) may use the following binary operators (in order of increasin
 | 4          | `*`, `/`                         | left          | `int`, `int`   | `int`       |
 
 Note that *MiniC* does **not** support a type conversion/coercion from `int` to `bool` or from
-`bool` to `int`. Also note that all `int` values have an arbitrary width.
+`bool` to `int`. Also note that all `int` values are defined to be 64 bit wide values in two's
+complement (overflows lead to a wrap around).
 
 ### Undefined Behavior
 
