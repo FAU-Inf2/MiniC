@@ -11,7 +11,6 @@ import i2.act.examples.minic.frontend.semantics.types.FunctionType;
 import i2.act.examples.minic.frontend.semantics.types.Type;
 import i2.act.util.Pair;
 
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -61,11 +60,11 @@ public final class Interpreter implements ASTVisitor<Interpreter.State, Interpre
 
   public static final class NumberValue extends Value {
 
-    public static final NumberValue UNDEFINED = new NumberValue(null);
+    public static final NumberValue UNDEFINED = new NumberValue(-1);
 
-    public final BigInteger value;
+    public final long value;
 
-    public NumberValue(final BigInteger value) {
+    public NumberValue(final long value) {
       super(AtomicType.INT);
       this.value = value;
     }
@@ -75,7 +74,7 @@ public final class Interpreter implements ASTVisitor<Interpreter.State, Interpre
       if (this == UNDEFINED) {
         return "UNDEF";
       } else {
-        return this.value.toString();
+        return String.valueOf(this.value);
       }
     }
 
@@ -90,7 +89,7 @@ public final class Interpreter implements ASTVisitor<Interpreter.State, Interpre
         return false;
       }
 
-      return this.value.equals(((NumberValue) other).value);
+      return this.value == ((NumberValue) other).value;
     }
 
   }
@@ -234,9 +233,9 @@ public final class Interpreter implements ASTVisitor<Interpreter.State, Interpre
       final boolean booleanValue = ((BooleanValue) value).value;
 
       if (booleanValue) {
-        return new NumberValue(BigInteger.ONE);
+        return new NumberValue(1);
       } else {
-        return new NumberValue(BigInteger.ZERO);
+        return new NumberValue(0);
       }
     }
 
@@ -255,9 +254,9 @@ public final class Interpreter implements ASTVisitor<Interpreter.State, Interpre
         return BooleanValue.UNDEFINED;
       }
 
-      final BigInteger numberValue = ((NumberValue) value).value;
+      final long numberValue = ((NumberValue) value).value;
 
-      if (BigInteger.ZERO.equals(numberValue)) {
+      if (numberValue == 0) {
         return new BooleanValue(false);
       } else {
         return new BooleanValue(true);
@@ -321,9 +320,8 @@ public final class Interpreter implements ASTVisitor<Interpreter.State, Interpre
     this.abortOnUndefinedBehavior = abortOnUndefinedBehavior;
   }
 
-  private static final boolean isPowerOfTwo(final BigInteger value) {
-    return value.compareTo(BigInteger.ONE) == 1
-        && value.and(value.subtract(BigInteger.ONE)).equals(BigInteger.ZERO);
+  private static final boolean isPowerOfTwo(final long value) {
+    return (value > 1) && ((value & (value - 1)) == 0);
   }
 
   @Override
@@ -357,7 +355,7 @@ public final class Interpreter implements ASTVisitor<Interpreter.State, Interpre
       return visit(mainFunction, state);
     }
 
-    return new NumberValue(BigInteger.ZERO);
+    return new NumberValue(0);
   }
 
   @Override
@@ -370,7 +368,7 @@ public final class Interpreter implements ASTVisitor<Interpreter.State, Interpre
         // only global variables have a predefined value
         assert (variableDeclaration.getType() == AtomicType.INT) : "only INT variables supported";
 
-        final NumberValue initialValue = new NumberValue(BigInteger.ZERO);
+        final NumberValue initialValue = new NumberValue(0);
         state.defineVariable(symbol, initialValue);
 
         return initialValue;
@@ -506,7 +504,7 @@ public final class Interpreter implements ASTVisitor<Interpreter.State, Interpre
   @Override
   public final Value visit(final Literal literal, final State state) {
     final String value = literal.getToken().string;
-    return new NumberValue(new BigInteger(value));
+    return new NumberValue(Long.parseLong(value));
   }
 
   @Override
@@ -571,34 +569,28 @@ public final class Interpreter implements ASTVisitor<Interpreter.State, Interpre
           return new BooleanValue(toBoolean(leftValue).value && toBoolean(rightValue).value);
         }
         case EQUALS: {
-          final int compare = toNumber(leftValue).value.compareTo(toNumber(rightValue).value);
-          return new BooleanValue(compare == 0);
+          return new BooleanValue(toNumber(leftValue).value == toNumber(rightValue).value);
         }
         case LESS_THAN: {
-          final int compare = toNumber(leftValue).value.compareTo(toNumber(rightValue).value);
-          return new BooleanValue(compare < 0);
+          return new BooleanValue(toNumber(leftValue).value < toNumber(rightValue).value);
         }
         case LESS_EQUALS: {
-          final int compare = toNumber(leftValue).value.compareTo(toNumber(rightValue).value);
-          return new BooleanValue(compare < 0 || compare == 0);
+          return new BooleanValue(toNumber(leftValue).value <= toNumber(rightValue).value);
         }
         case GREATER_THAN: {
-          final int compare = toNumber(leftValue).value.compareTo(toNumber(rightValue).value);
-          return new BooleanValue(compare > 0);
+          return new BooleanValue(toNumber(leftValue).value > toNumber(rightValue).value);
         }
         case GREATER_EQUALS: {
-          final int compare = toNumber(leftValue).value.compareTo(toNumber(rightValue).value);
-          return new BooleanValue(compare > 0 || compare == 0);
+          return new BooleanValue(toNumber(leftValue).value >= toNumber(rightValue).value);
         }
         case NOT_EQUALS: {
-          final int compare = toNumber(leftValue).value.compareTo(toNumber(rightValue).value);
-          return new BooleanValue(compare != 0);
+          return new BooleanValue(toNumber(leftValue).value != toNumber(rightValue).value);
         }
         case ADD: {
-          return new NumberValue(toNumber(leftValue).value.add(toNumber(rightValue).value));
+          return new NumberValue(toNumber(leftValue).value + toNumber(rightValue).value);
         }
         case SUB: {
-          return new NumberValue(toNumber(leftValue).value.subtract(toNumber(rightValue).value));
+          return new NumberValue(toNumber(leftValue).value - toNumber(rightValue).value);
         }
         case MUL: {
           final NumberValue rightNumber = toNumber(rightValue);
@@ -609,19 +601,19 @@ public final class Interpreter implements ASTVisitor<Interpreter.State, Interpre
             return rightNumber;
           }
 
-          return new NumberValue(toNumber(leftValue).value.multiply(rightNumber.value));
+          return new NumberValue(toNumber(leftValue).value * rightNumber.value);
         }
         case DIV: {
           final NumberValue divisor = toNumber(rightValue);
 
           // check for injected bug
           if (!Bugs.getInstance().isEnabled(Bug.DIV_BY_ZERO)) {
-            if (BigInteger.ZERO.equals(divisor.value)) {
+            if (divisor.value == 0) {
               return NumberValue.UNDEFINED;
             }
           }
 
-          return new NumberValue(toNumber(leftValue).value.divide(divisor.value));
+          return new NumberValue(toNumber(leftValue).value / divisor.value);
         }
         default: {
           assert (false) : "unknown binary operator: " + operator;
