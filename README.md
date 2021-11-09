@@ -1,5 +1,5 @@
-MiniC: An Example Target for Compiler Testing Techniques
-========================================================
+MiniC: A Toy SUT for Compiler Testing Techniques
+================================================
 
 This repository contains the implementation of an interpreter for the *MiniC* toy programming
 language (see [below](#a-quick-tour-of-minic) for a brief introduction to *MiniC*). When running the
