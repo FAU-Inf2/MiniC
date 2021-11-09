@@ -190,6 +190,8 @@ The following exemplary scripts are provided in the `checks/` subdirectory:
 - `rejection.sh`: Checks if the "implementation under test" rejects the input program.
 - `rejection_check.sh`: Checks if the "implementation under test" rejects the input program, but
  only if the "reference implementation" accepts the input program.
+- `rejection_syntax.sh`: Checks if the lexer or parser of the "implementation under test" rejects
+  the input program (i.e., if it considers the input program lexically or syntactically invalid).
 - `wrong_output.sh`: Checks if the "implementation under test" produces a different program output
  or exit code than the "reference implementation".
 - `wrong_output_check.sh`: Checks if the "implementation under test" produces a different program
