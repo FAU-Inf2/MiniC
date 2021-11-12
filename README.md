@@ -177,6 +177,28 @@ groups of bugs:
 - `--allInterpreterBugs`: Enables all bugs in the interpreter.
 - `--allBugs`: Enables all bugs.
 
+## Classification of Input Programs
+
+The `classify.sh` helper script can be used to classify a number of programs (i.e., to count how
+many of the given input programs are lexically/syntactically/semantically/dynamically invalid,
+(apparently) non-terminating, and valid). It supports the following command line options:
+
+- `--path <search directory>`: The directory that contains the programs that should be classified.
+- `--pattern <file name pattern>`: Glob pattern that describes which programs should be considered
+  for classification; the pattern may use a `*` as wildcard symbol (e.g., `'*.c'`).
+- `--recursive`: If this command line option is set, the classification also considers programs that
+  are contained in subdirectories of the given directory.
+- `--maxNumberOfSteps <number>`: Specifies the maximum number of steps that the interpreter should
+  perform for each program before it assumes that the program is non-terminating (unbounded by
+  default).
+- `--maxNumberOfLoopIterations <number>`: Specifies the maximum number of loop iterations that the
+  interpreter should perform for each loop before it assumes that the program is non-terminating
+  (unbounded by default).
+
+For example, run the following to classify all programs in the `examples/` subdirectory:
+
+    ./classify.sh --path examples/ --pattern '*.c' --maxNumberOfSteps 100000
+
 ## Test Scripts
 
 Many compiler testing techniques (e.g., compiler fuzzers or test case reducers) require a test
