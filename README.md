@@ -113,6 +113,10 @@ following command line options:
   [undefined behavior](#undefined-behavior) during execution that leads to an undefined control
   flow, program output or exit code; note that this requires a full interpreter run (which runs
   indefinitely in case of infinite loops in the input program).
+- `--maxNumberOfSteps <number>`: Specifies the maximum number of steps that the interpreter should
+  perform before aborting (unbounded by default).
+- `--maxNumberOfLoopIterations <number>`: Specifies the maximum number of loop iterations that the
+  interpreter should perform for each loop before aborting (unbounded by default).
 
 Additionally, the *MiniC* interpreter supports several command line flags that inject certain bugs
 into the interpreter pipeline (see [below](#injecting-bugs)).
@@ -126,6 +130,9 @@ interpreter terminates with the following exit code:
   typing rules).
 - `133`, if the input program is *dynamically* invalid (i.e., if it contains undefined behavior;
   only applicable if the `--checkUndef` command line flag is enabled).
+- `134`, if the interpreter reached the maximum allowed number of steps or loop iterations (only
+  applicable if the `--maxNumberOfSteps` or `--maxNumberOfLoopIterations` command line option is
+  set).
 
 ## Injecting Bugs
 
