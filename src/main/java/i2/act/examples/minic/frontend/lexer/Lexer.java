@@ -175,7 +175,7 @@ public final class Lexer {
         continue skip;
       }
 
-      // handle comments
+      // handle line comments
       if (firstChar == '/'
           && this.lookaheadPosition < this.characters.length - 1
           && this.characters[this.lookaheadPosition + 1] == '/') {
@@ -193,6 +193,36 @@ public final class Lexer {
             continue skip;
           }
         }
+      }
+
+      // handle block comments
+      if (firstChar == '/'
+          && this.lookaheadPosition < this.characters.length - 1
+          && this.characters[this.lookaheadPosition + 1] == '*') {
+        this.lookaheadPosition += 2;
+        this.lookaheadColumn += 2;
+
+        while (this.lookaheadPosition < this.characters.length - 1) {
+          final char nextChar = this.characters[this.lookaheadPosition];
+          final char nextNextChar = this.characters[this.lookaheadPosition + 1];
+
+          ++this.lookaheadPosition;
+          ++this.lookaheadColumn;
+
+          if (nextChar == '\n') {
+            ++this.lookaheadLine;
+            this.lookaheadColumn = 1;
+          } else if (nextChar == '*' && nextNextChar == '/') {
+            ++this.lookaheadPosition;
+            ++this.lookaheadColumn;
+
+            // found end of comment
+            continue skip;
+          }
+        }
+
+        throw InvalidProgramException.lexicallyInvalid(getPosition(),
+            "unterminated block comment");
       }
 
       final SourcePosition begin =
