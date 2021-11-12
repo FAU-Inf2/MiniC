@@ -5,6 +5,7 @@ import i2.act.examples.minic.bugs.Bugs;
 import i2.act.examples.minic.errors.InvalidProgramException;
 import i2.act.examples.minic.frontend.ast.*;
 import i2.act.examples.minic.frontend.ast.visitors.ASTVisitor;
+import i2.act.examples.minic.frontend.info.SourcePosition;
 import i2.act.examples.minic.frontend.semantics.symbols.Symbol;
 import i2.act.examples.minic.frontend.semantics.types.AtomicType;
 import i2.act.examples.minic.frontend.semantics.types.FunctionType;
@@ -20,12 +21,6 @@ import java.util.Map;
 public final class Interpreter implements ASTVisitor<Interpreter.State, Interpreter.Value> {
 
   public static final int UNBOUNDED = -1;
-
-  public static final class Timeout extends RuntimeException {
-
-    // intentionally left blank
-
-  }
 
   public static final Pair<Value, List<Value>> interpret(final Program program) {
     return interpret(program, UNBOUNDED, UNBOUNDED);
@@ -349,7 +344,7 @@ public final class Interpreter implements ASTVisitor<Interpreter.State, Interpre
 
   private final void checkNumberOfSteps(final int numberOfSteps, final int maxNumberOfSteps) {
     if (maxNumberOfSteps != UNBOUNDED && numberOfSteps > maxNumberOfSteps) {
-      throw new Timeout();
+      throw InvalidProgramException.nonTerminating(SourcePosition.UNKNOWN, "reached timeout");
     }
   }
 

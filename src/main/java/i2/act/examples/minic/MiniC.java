@@ -29,6 +29,9 @@ public final class MiniC {
   private static final String OPTION_CHECK_UNDEFINED = "--checkUndef";
   private static final String OPTION_INTERPRET = "--interpret";
 
+  private static final String OPTION_MAX_NUMBER_OF_STEPS = "--maxNumberOfSteps";
+  private static final String OPTION_MAX_NUMBER_OF_LOOP_ITERATIONS = "--maxNumberOfLoopIterations";
+
   private static final String OPTION_BUGS = "--bugs";
   private static final String OPTION_ALL_LEXER_BUGS = "--allLexerBugs";
   private static final String OPTION_ALL_PARSER_BUGS = "--allParserBugs";
@@ -46,6 +49,9 @@ public final class MiniC {
 
     argumentsParser.addOption(OPTION_CHECK_UNDEFINED, false);
     argumentsParser.addOption(OPTION_INTERPRET, false);
+
+    argumentsParser.addOption(OPTION_MAX_NUMBER_OF_STEPS, false, true, "<number>");
+    argumentsParser.addOption(OPTION_MAX_NUMBER_OF_LOOP_ITERATIONS, false, true, "<number>");
 
     argumentsParser.addOption(OPTION_BUGS, false, true, "<list of bugs>");
     argumentsParser.addOption(OPTION_ALL_LEXER_BUGS, false);
@@ -74,6 +80,11 @@ public final class MiniC {
     if (Bugs.getInstance().numberOfBugs() > 0) {
       System.err.format("[i] enabled bugs: %s\n", Bugs.getInstance().toString());
     }
+
+    final int maxNumberOfSteps =
+        arguments.getIntOptionOr(OPTION_MAX_NUMBER_OF_STEPS, Interpreter.UNBOUNDED);
+    final int maxNumberOfLoopIterations =
+        arguments.getIntOptionOr(OPTION_MAX_NUMBER_OF_LOOP_ITERATIONS, Interpreter.UNBOUNDED);
 
     try {
       final Program program = Parser.parse(input);
@@ -107,12 +118,12 @@ public final class MiniC {
       SemanticAnalysis.analyze(program);
 
       if (arguments.hasOption(OPTION_CHECK_UNDEFINED)) {
-        Interpreter.checkDynamicallyValid(program);
+        Interpreter.checkDynamicallyValid(program, maxNumberOfSteps, maxNumberOfLoopIterations);
       }
 
       if (arguments.hasOption(OPTION_INTERPRET)) {
         final Pair<Interpreter.Value, List<Interpreter.Value>> result =
-            Interpreter.interpret(program);
+            Interpreter.interpret(program, maxNumberOfSteps, maxNumberOfLoopIterations);
 
         final Interpreter.Value exitValue = result.getFirst();
         final List<Interpreter.Value> output = result.getSecond();
