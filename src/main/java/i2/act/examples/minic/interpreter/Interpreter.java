@@ -19,9 +19,23 @@ import java.util.Map;
 
 public final class Interpreter implements ASTVisitor<Interpreter.State, Interpreter.Value> {
 
+  public static final int UNBOUNDED = -1;
+
+  public static final class Timeout extends RuntimeException {
+
+    // intentionally left blank
+
+  }
+
   public static final Pair<Value, List<Value>> interpret(final Program program) {
+    return interpret(program, UNBOUNDED, UNBOUNDED);
+  }
+
+  public static final Pair<Value, List<Value>> interpret(final Program program,
+      final int maxNumberOfSteps, final int maxNumberOfLoopIterations) {
     final State state = new State();
-    final Interpreter interpreter = new Interpreter(false);
+    final Interpreter interpreter =
+        new Interpreter(false, maxNumberOfSteps, maxNumberOfLoopIterations);
 
     final Value exitValue = interpreter.visit(program, state);
 
@@ -29,8 +43,14 @@ public final class Interpreter implements ASTVisitor<Interpreter.State, Interpre
   }
 
   public static final void checkDynamicallyValid(final Program program) {
+    checkDynamicallyValid(program, UNBOUNDED, UNBOUNDED);
+  }
+
+  public static final void checkDynamicallyValid(final Program program,
+      final int maxNumberOfSteps, final int maxNumberOfLoopIterations) {
     final State state = new State();
-    final Interpreter interpreter = new Interpreter(true);
+    final Interpreter interpreter =
+        new Interpreter(true, maxNumberOfSteps, maxNumberOfLoopIterations);
 
     final Value exitValue = interpreter.visit(program, state);
     final List<Value> output = state.getOutput();
@@ -314,10 +334,23 @@ public final class Interpreter implements ASTVisitor<Interpreter.State, Interpre
 
   // ===============================================================================================
 
+  private final int maxNumberOfSteps;
+  private final int maxNumberOfLoopIterations;
   private final boolean abortOnUndefinedBehavior;
 
-  private Interpreter(final boolean abortOnUndefinedBehavior) {
+  private int numberOfSteps;
+
+  private Interpreter(final boolean abortOnUndefinedBehavior, final int maxNumberOfSteps,
+      final int maxNumberOfLoopIterations) {
     this.abortOnUndefinedBehavior = abortOnUndefinedBehavior;
+    this.maxNumberOfSteps = maxNumberOfSteps;
+    this.maxNumberOfLoopIterations = maxNumberOfLoopIterations;
+  }
+
+  private final void checkNumberOfSteps(final int numberOfSteps, final int maxNumberOfSteps) {
+    if (maxNumberOfSteps != UNBOUNDED && numberOfSteps > maxNumberOfSteps) {
+      throw new Timeout();
+    }
   }
 
   private static final boolean isPowerOfTwo(final long value) {
@@ -326,6 +359,8 @@ public final class Interpreter implements ASTVisitor<Interpreter.State, Interpre
 
   @Override
   public final Value visit(final Program program, final State state) {
+    this.numberOfSteps = 0;
+
     FunctionDeclaration mainFunction = null;
 
     for (final Declaration globalDeclaration : program.getDeclarations()) {
@@ -416,6 +451,8 @@ public final class Interpreter implements ASTVisitor<Interpreter.State, Interpre
 
   @Override
   public final Value visit(final AssignStatement assignStatement, final State state) {
+    checkNumberOfSteps(++this.numberOfSteps, this.maxNumberOfSteps);
+
     final Expression rightHandSide = assignStatement.getRightHandSide();
     final Value value = rightHandSide.accept(this, state);
 
@@ -427,12 +464,16 @@ public final class Interpreter implements ASTVisitor<Interpreter.State, Interpre
 
   @Override
   public final Value visit(final FunctionCallStatement functionCallStatement, final State state) {
+    checkNumberOfSteps(++this.numberOfSteps, this.maxNumberOfSteps);
+
     final FunctionCall functionCall = functionCallStatement.getFunctionCall();
     return visit(functionCall, state);
   }
 
   @Override
   public final Value visit(final IfStatement ifStatement, final State state) {
+    checkNumberOfSteps(++this.numberOfSteps, this.maxNumberOfSteps);
+
     final Expression condition = ifStatement.getCondition();
     final BooleanValue conditionValue = toBoolean(condition.accept(this, state));
 
@@ -456,7 +497,11 @@ public final class Interpreter implements ASTVisitor<Interpreter.State, Interpre
 
   @Override
   public final Value visit(final WhileLoop whileLoop, final State state) {
+    int numberOfIterations = 0;
+
     while (true) {
+      checkNumberOfSteps(++this.numberOfSteps, this.maxNumberOfSteps);
+
       final Expression condition = whileLoop.getCondition();
       final BooleanValue conditionValue = toBoolean(condition.accept(this, state));
 
@@ -466,6 +511,8 @@ public final class Interpreter implements ASTVisitor<Interpreter.State, Interpre
       }
 
       if (isTrue(conditionValue)) {
+        checkNumberOfSteps(++numberOfIterations, this.maxNumberOfLoopIterations);
+
         final Block body = whileLoop.getBody();
         visit(body, state);
       } else {
@@ -478,6 +525,8 @@ public final class Interpreter implements ASTVisitor<Interpreter.State, Interpre
 
   @Override
   public final Value visit(final ReturnStatement returnStatement, final State state) {
+    checkNumberOfSteps(++this.numberOfSteps, this.maxNumberOfSteps);
+
     if (returnStatement.hasReturnValue()) {
       final Value returnValue = returnStatement.getReturnValue().accept(this, state);
 
