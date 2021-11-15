@@ -26,41 +26,43 @@ Its features include function definitions, global and local variables (of type `
 function for program output. For example, the following program computes and prints the 8th
 Fibonacci number in two different ways:
 
-    int fib_rec(int n, int a, int b) {
-      if (n == 0) {
-        return a;
-      }
-      if (n == 1) {
-        return b;
-      }
-      return fib_rec(n - 1, b, a + b);
-    }
+```c
+int fib_rec(int n, int a, int b) {
+  if (n == 0) {
+    return a;
+  }
+  if (n == 1) {
+    return b;
+  }
+  return fib_rec(n - 1, b, a + b);
+}
 
-    int fib_it(int n) {
-      int a;
-      int b;
-      int i;
+int fib_it(int n) {
+  int a;
+  int b;
+  int i;
 
-      a = 1;
-      b = 1;
-      i = 2;
+  a = 1;
+  b = 1;
+  i = 2;
 
-      while (i < n) {
-        int t;
-        t = a + b;
-        a = b;
-        b = t;
-        i = i + 1;
-      }
+  while (i < n) {
+    int t;
+    t = a + b;
+    a = b;
+    b = t;
+    i = i + 1;
+  }
 
-      return b;
-    }
+  return b;
+}
 
-    int main() {
-      print(fib_rec(8, 0, 1));
-      print(fib_it(8));
-      return 0;
-    }
+int main() {
+  print(fib_rec(8, 0, 1));
+  print(fib_it(8));
+  return 0;
+}
+```
 
 The file `grammar/minic.txt` contains the full context-free grammar for the *MiniC* programming
 language (in the format used by the [j-PEG](https://github.com/FAU-Inf2/j-PEG) parser library).
