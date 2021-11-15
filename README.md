@@ -192,6 +192,10 @@ many of the given input programs are lexically/syntactically/semantically/dynami
   for classification; the pattern may use a `*` as wildcard symbol (e.g., `'*.c'`).
 - `--recursive`: If this command line option is set, the classification also considers programs that
   are contained in subdirectories of the given directory.
+- `--lazyLexer`: By default, the lexer works in an eager fashion (i.e., the lexer first lexes the
+  *complete* input program before the parser begins its work). If the `--lazyLexer` command line
+  option is set, the lexer works in a lazy fashion instead (i.e., lexing and parsing are interwoven
+  and the lexer only lexes parts of a program when required by the parser).
 - `--maxNumberOfSteps <number>`: Specifies the maximum number of steps that the interpreter should
   perform for each program before it assumes that the program is non-terminating (unbounded by
   default).
