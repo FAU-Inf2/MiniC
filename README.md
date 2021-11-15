@@ -102,6 +102,10 @@ Use the `run.sh` script in the root directory to run the *MiniC* interpreter. It
 following command line options:
 
 - `--in <file name>` (mandatory): Specifies the path to the input program.
+- `--lazyLexer`: By default, the lexer works in an eager fashion (i.e., the lexer first lexes the
+  *complete* input program before the parser begins its work). If the `--lazyLexer` command line
+  option is set, the lexer works in a lazy fashion instead (i.e., lexing and parsing are interwoven
+  and the lexer only lexes parts of a program when required by the parser).
 - `--prettyPrint <file name>`: If enabled, the parsed input program is pretty printed and the result
   is written to the specified file (or to stdout if `-` is given as file name).
 - `--toDot <file name>`: If enabled, a Dot description for the input program's AST is generated and
