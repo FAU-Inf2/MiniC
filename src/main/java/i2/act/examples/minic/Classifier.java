@@ -2,6 +2,10 @@ package i2.act.examples.minic;
 
 import i2.act.examples.minic.errors.InvalidProgramException;
 import i2.act.examples.minic.frontend.ast.Program;
+import i2.act.examples.minic.frontend.lexer.EagerTokenStream;
+import i2.act.examples.minic.frontend.lexer.LazyTokenStream;
+import i2.act.examples.minic.frontend.lexer.Lexer;
+import i2.act.examples.minic.frontend.lexer.TokenStream;
 import i2.act.examples.minic.frontend.parser.Parser;
 import i2.act.examples.minic.frontend.semantics.SemanticAnalysis;
 import i2.act.examples.minic.interpreter.Interpreter;
@@ -22,6 +26,8 @@ public final class Classifier {
   private static final String OPTION_PATTERN = "--pattern";
   private static final String OPTION_RECURSIVE = "--recursive";
 
+  private static final String OPTION_LAZY_LEXER = "--lazyLexer";
+
   private static final String OPTION_MAX_NUMBER_OF_STEPS = "--maxNumberOfSteps";
   private static final String OPTION_MAX_NUMBER_OF_LOOP_ITERATIONS = "--maxNumberOfLoopIterations";
 
@@ -31,6 +37,8 @@ public final class Classifier {
     argumentsParser.addOption(OPTION_PATH, true, true, "<search directory>");
     argumentsParser.addOption(OPTION_PATTERN, true, true, "<file name pattern>");
     argumentsParser.addOption(OPTION_RECURSIVE, false);
+
+    argumentsParser.addOption(OPTION_LAZY_LEXER, false);
 
     argumentsParser.addOption(OPTION_MAX_NUMBER_OF_STEPS, false, true, "<number>");
     argumentsParser.addOption(OPTION_MAX_NUMBER_OF_LOOP_ITERATIONS, false, true, "<number>");
@@ -73,6 +81,8 @@ public final class Classifier {
     final String pattern = arguments.getOption(OPTION_PATTERN);
     final boolean recursive = arguments.hasOption(OPTION_RECURSIVE);
 
+    final boolean lazyLexer = arguments.hasOption(OPTION_LAZY_LEXER);
+
     final int maxNumberOfSteps =
         arguments.getIntOptionOr(OPTION_MAX_NUMBER_OF_STEPS, Interpreter.UNBOUNDED);
     final int maxNumberOfLoopIterations =
@@ -89,7 +99,7 @@ public final class Classifier {
       final String programCode = FileUtil.readFile(programFile);
 
       final ClassificationResult classificationResult =
-          classify(programCode, maxNumberOfSteps, maxNumberOfLoopIterations);
+          classify(programCode, lazyLexer, maxNumberOfSteps, maxNumberOfLoopIterations);
       ++counts[classificationResult.ordinal()];
 
       System.out.print(".");
@@ -126,11 +136,21 @@ public final class Classifier {
   }
 
   private static final ClassificationResult classify(final String programCode,
-      final int maxNumberOfSteps, final int maxNumberOfLoopIterations) {
+      final boolean lazyLexer, final int maxNumberOfSteps, final int maxNumberOfLoopIterations) {
     final Program program;
     {
       try {
-        program = Parser.parse(programCode);
+        final TokenStream tokenStream;
+        {
+          if (lazyLexer) {
+            tokenStream = LazyTokenStream.from(new Lexer(programCode));
+          } else {
+            tokenStream = EagerTokenStream.from(new Lexer(programCode));
+          }
+        }
+
+        program = Parser.parse(tokenStream);
+
         SemanticAnalysis.analyze(program);
         Interpreter.checkDynamicallyValid(program, maxNumberOfSteps, maxNumberOfLoopIterations);
 
