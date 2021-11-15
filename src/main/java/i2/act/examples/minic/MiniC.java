@@ -6,6 +6,10 @@ import i2.act.examples.minic.errors.InvalidProgramException;
 import i2.act.examples.minic.frontend.ast.Program;
 import i2.act.examples.minic.frontend.ast.visitors.DotGenerator;
 import i2.act.examples.minic.frontend.ast.visitors.PrettyPrinter;
+import i2.act.examples.minic.frontend.lexer.EagerTokenStream;
+import i2.act.examples.minic.frontend.lexer.LazyTokenStream;
+import i2.act.examples.minic.frontend.lexer.Lexer;
+import i2.act.examples.minic.frontend.lexer.TokenStream;
 import i2.act.examples.minic.frontend.parser.Parser;
 import i2.act.examples.minic.frontend.semantics.SemanticAnalysis;
 import i2.act.examples.minic.interpreter.Interpreter;
@@ -22,6 +26,8 @@ public final class MiniC {
   private static final ProgramArgumentsParser argumentsParser;
 
   private static final String OPTION_INPUT_FILE = "--in";
+
+  private static final String OPTION_LAZY_LEXER = "--lazyLexer";
 
   private static final String OPTION_PRETTY_PRINT = "--prettyPrint";
   private static final String OPTION_TO_DOT = "--toDot";
@@ -43,6 +49,8 @@ public final class MiniC {
     argumentsParser = new ProgramArgumentsParser();
 
     argumentsParser.addOption(OPTION_INPUT_FILE, true, true, "<path to input file>");
+
+    argumentsParser.addOption(OPTION_LAZY_LEXER, false);
 
     argumentsParser.addOption(OPTION_PRETTY_PRINT, false, true, "<file name>");
     argumentsParser.addOption(OPTION_TO_DOT, false, true, "<file name>");
@@ -87,7 +95,16 @@ public final class MiniC {
         arguments.getIntOptionOr(OPTION_MAX_NUMBER_OF_LOOP_ITERATIONS, Interpreter.UNBOUNDED);
 
     try {
-      final Program program = Parser.parse(input);
+      final TokenStream tokenStream;
+      {
+        if (arguments.hasOption(OPTION_LAZY_LEXER)) {
+          tokenStream = LazyTokenStream.from(new Lexer(input));
+        } else {
+          tokenStream = EagerTokenStream.from(new Lexer(input));
+        }
+      }
+
+      final Program program = Parser.parse(tokenStream);
 
       if (arguments.hasOption(OPTION_PRETTY_PRINT)) {
         final String fileNamePrettyPrinted = arguments.getOption(OPTION_PRETTY_PRINT);

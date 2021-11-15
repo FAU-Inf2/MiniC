@@ -31,105 +31,6 @@ public final class Lexer {
     this.column = 1;
   }
 
-  public final Token pop() {
-    final Token token = peek();
-    advanceTo(token.getEnd());
-
-    return token;
-  }
-
-  public final Token assertPop(final TokenKind kind) {
-    final Token token = peek();
-    final TokenKind actualKind = token.getKind();
-
-    if (!kind.equals(actualKind)) {
-      throw InvalidProgramException.syntacticallyInvalid(getPosition(),
-          String.format("expected '%s', but found '%s'", kind, actualKind));
-    }
-
-    advanceTo(token.getEnd());
-
-    return token;
-  }
-
-  public final void assertNotPeek(final TokenKind... kinds) {
-    final Token token = peek();
-    final TokenKind actualKind = token.getKind();
-
-    for (final TokenKind kind : kinds) {
-      if (kind.equals(actualKind)) {
-        throw InvalidProgramException.syntacticallyInvalid(getPosition(),
-            String.format("did not expect '%s'", actualKind));
-      }
-    }
-  }
-
-  public final void assertPeek(final TokenKind... kinds) {
-    final Token token = peek();
-    final TokenKind actualKind = token.getKind();
-
-    for (final TokenKind kind : kinds) {
-      if (kind.equals(actualKind)) {
-        return;
-      }
-    }
-
-    // next token does not match any of the expected tokens -> throw exception
-
-    final String expected;
-    {
-      final StringBuilder builder = new StringBuilder();
-
-      for (int index = 0; index < kinds.length; ++index) {
-        builder.append("'");
-        builder.append(kinds[index]);
-        builder.append("'");
-
-        if (index < kinds.length - 1) {
-          if (kinds.length > 2) {
-            builder.append(",");
-          }
-
-          builder.append(" ");
-
-          if (index == kinds.length - 2) {
-            builder.append("or ");
-          }
-        }
-      }
-
-      expected = builder.toString();
-    }
-
-    throw InvalidProgramException.syntacticallyInvalid(getPosition(),
-        String.format("expected %s, but found '%s'", expected, actualKind));
-  }
-
-  public final boolean peekIs(final TokenKind... kinds) {
-    final Token token = peek();
-    final TokenKind actualKind = token.getKind();
-
-    for (final TokenKind kind : kinds) {
-      if (kind.equals(actualKind)) {
-        return true;
-      }
-    }
-
-    return false;
-  }
-
-  public final boolean skip(final TokenKind kind) {
-    final Token token = peek();
-    final TokenKind actualKind = token.getKind();
-
-    if (kind.equals(actualKind)) {
-      advanceTo(token.getEnd());
-      return true;
-    } else {
-      return false;
-    }
-  }
-
   public final SourcePosition getPosition() {
     return new SourcePosition(this.position, this.line, this.column);
   }
@@ -138,6 +39,13 @@ public final class Lexer {
     this.position = position.offset;
     this.line = position.line;
     this.column = position.column;
+  }
+
+  public final Token pop() {
+    final Token token = peek();
+    advanceTo(token.getEnd());
+
+    return token;
   }
 
   public final Token peek() {
