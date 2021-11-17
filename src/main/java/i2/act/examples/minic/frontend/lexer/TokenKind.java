@@ -19,7 +19,7 @@ public enum TokenKind {
   TK_LBRACE("{"),
   TK_RBRACE("}"),
   TK_NUM("<NUM>"),
-  TK_IDENTIFIER("<IDENTIFIER>"),
+  TK_IDENT("<IDENT>"),
   /* boolean operators */
   TK_OR_OP("||", Operator.OR),
   TK_AND_OP("&&", Operator.AND),

@@ -273,7 +273,7 @@ public final class Lexer {
               final SourcePosition end = new SourcePosition(
                   this.lookaheadPosition, this.lookaheadLine, this.lookaheadColumn);
 
-              return new Token(TokenKind.TK_IDENTIFIER, begin, end, tokenText);
+              return new Token(TokenKind.TK_IDENT, begin, end, tokenText);
             }
           }
 
@@ -300,7 +300,7 @@ public final class Lexer {
               final SourcePosition end = new SourcePosition(
                   this.lookaheadPosition, this.lookaheadLine, this.lookaheadColumn);
 
-              return new Token(TokenKind.TK_IDENTIFIER, begin, end, tokenText);
+              return new Token(TokenKind.TK_IDENT, begin, end, tokenText);
             }
           }
         }

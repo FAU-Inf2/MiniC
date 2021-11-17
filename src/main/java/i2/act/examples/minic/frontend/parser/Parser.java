@@ -151,7 +151,7 @@ public final class Parser {
   private static final Identifier parseIdentifier(final TokenStream tokenStream) {
     final SourcePosition position = tokenStream.getPosition();
 
-    final Token identifier = tokenStream.assertPop(TokenKind.TK_IDENTIFIER);
+    final Token identifier = tokenStream.assertPop(TokenKind.TK_IDENT);
 
     return new Identifier(position, identifier);
   }
@@ -190,7 +190,7 @@ public final class Parser {
 
     final SourcePosition position = tokenStream.getPosition();
 
-    if (tokenStream.peekIs(TokenKind.TK_IDENTIFIER)) {
+    if (tokenStream.peekIs(TokenKind.TK_IDENT)) {
       final Identifier identifier = parseIdentifier(tokenStream);
 
       // check for injected bug
@@ -442,7 +442,7 @@ public final class Parser {
 
     final SourcePosition position = tokenStream.getPosition();
 
-    tokenStream.assertPeek(TokenKind.TK_IDENTIFIER, TokenKind.TK_NUM, TokenKind.TK_LPAREN);
+    tokenStream.assertPeek(TokenKind.TK_IDENT, TokenKind.TK_NUM, TokenKind.TK_LPAREN);
 
     if (tokenStream.peekIs(TokenKind.TK_NUM)) {
       final Token token = tokenStream.assertPop(TokenKind.TK_NUM);
