@@ -17,11 +17,11 @@ public final class Token {
             begin.offset + kind.stringRepresentation.length(),
             begin.line,
             begin.column + kind.stringRepresentation.length()),
-        null);
+        kind.stringRepresentation);
   }
 
   public Token(final TokenKind kind, final SourcePosition begin, final SourcePosition end) {
-    this(kind, begin, end, null);
+    this(kind, begin, end, kind.stringRepresentation);
   }
 
   public Token(final TokenKind kind, final SourcePosition begin, final SourcePosition end,
@@ -46,12 +46,9 @@ public final class Token {
     return this.end;
   }
 
+  @Override
   public final String toString() {
-    if (this.string == null) {
-      return String.format("TK<%s, %s>", this.kind, this.begin);
-    } else {
-      return String.format("TK<%s:'%s', %s, %s>", this.kind, this.string, this.begin, this.end);
-    }
+    return String.format("TK<%s:'%s', %s, %s>", this.kind, this.string, this.begin, this.end);
   }
 
 }

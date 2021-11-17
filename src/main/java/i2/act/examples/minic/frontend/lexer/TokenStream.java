@@ -37,7 +37,7 @@ public abstract class TokenStream {
     final String expected = constructExpected(kinds);
 
     throw InvalidProgramException.syntacticallyInvalid(getPosition(),
-        String.format("expected %s, but found '%s'", expected, actualKind));
+        String.format("expected %s, but found '%s'", expected, token.string));
   }
 
   public final boolean peekIs(final TokenKind... kinds) {
@@ -71,7 +71,7 @@ public abstract class TokenStream {
 
     if (!kind.equals(actualKind)) {
       throw InvalidProgramException.syntacticallyInvalid(getPosition(),
-          String.format("expected '%s', but found '%s'", kind, actualKind));
+          String.format("expected '%s', but found '%s'", kind, token.string));
     }
 
     pop();
