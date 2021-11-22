@@ -100,7 +100,7 @@ Note that the *MiniC* interpreter can check if it encounters undefined behavior 
 
 ## Running the MiniC Interpreter
 
-Use the `run.sh` script in the root directory to run the *MiniC* interpreter. It supports the
+Use the `minic.sh` script in the root directory to run the *MiniC* interpreter. It supports the
 following command line options:
 
 - `--in <file name>` (mandatory): Specifies the path to the input program.

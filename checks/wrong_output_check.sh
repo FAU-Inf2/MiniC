@@ -4,7 +4,7 @@ readonly TIMEOUT=3 # seconds
 readonly MAX_SIZE=1024 # byte
 
 readonly THIS_DIR="$(dirname "$0")"
-readonly MINIC="$THIS_DIR/../run.sh"
+readonly MINIC="$THIS_DIR/../minic.sh"
 
 function usage {
   echo "USAGE: $0 [MINIC_OPTIONS...] PROGRAM_PATH" >&2
