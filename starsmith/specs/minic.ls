@@ -234,12 +234,15 @@ class Statement {
   @weight(20)
   if ("if (${condition : Expression}) ${then : Block}") {
     condition.expected_type = (Type:boolType);
+    then.is_conditional_block = true;
     this.symbols_after = this.symbols_before;
   }
 
   @weight(20)
   if_else ("if (${condition : Expression}) ${then : Block} else ${else : Block}") {
     condition.expected_type = (Type:boolType);
+    then.is_conditional_block = true;
+    else.is_conditional_block = true;
     this.symbols_after =
         (SymbolTable:leaveScope (SymbolTable:intersect then.symbols_at_end else.symbols_at_end));
   }
@@ -247,11 +250,7 @@ class Statement {
   @weight(3)
   while ("while (${condition : Expression}) ${body : Block}") {
     condition.expected_type = (Type:boolType);
-    this.symbols_after = this.symbols_before;
-  }
-
-  # TODO remove premature return statements?
-  return ("${return : ReturnStatement}") {
+    body.is_conditional_block = false;
     this.symbols_after = this.symbols_before;
   }
 
@@ -262,6 +261,7 @@ class Statement {
 
   @weight(6)
   block ("${block : Block}") {
+    block.is_conditional_block = false;
     this.symbols_after = (SymbolTable:leaveScope block.symbols_at_end);
   }
 
@@ -275,9 +275,32 @@ class Block {
 
   inh return_type : Type;
 
-  block ("{\+${stmts : StatementList}\-}") {
+  inh is_conditional_block : boolean;
+
+  block ("{\+${stmts : StatementList}${return : OptionalReturnStatement}\-}") {
     stmts.symbols_before = (SymbolTable:enterScope this.symbols_before);
+    return.return_allowed = this.is_conditional_block;
     this.symbols_at_end = stmts.symbols_after;
+  }
+
+}
+
+@copy
+class OptionalReturnStatement {
+
+  inh symbols_before : SymbolTable;
+  inh return_type : Type;
+  inh return_allowed : boolean;
+
+  grd valid;
+
+  @weight(3)
+  no_return ("") {
+    this.valid = true;
+  }
+
+  return ("\n${return : ReturnStatement}") {
+    this.valid = this.return_allowed;
   }
 
 }
