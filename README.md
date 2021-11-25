@@ -252,6 +252,10 @@ the language-agnostic [StarSmith](https://github.com/FAU-Inf2/StarSmith) compile
 - The `out/runtime/` subdirectory contains the runtime classes that the *LaLa* specification makes
   use of.
 
+**Note**: There is also a variant of the *LaLa* specification that does not try to rule out
+undefined behavior in the generated programs (i.e., the programs are *statically* valid, but in
+general not *dynamically* valid), see `specs/minic_undef.ls`.
+
 At first, the *LaLa* specification and the runtime classes have to be compiled:
 
     ./translate_specs.sh <path to StarSmith jar>
