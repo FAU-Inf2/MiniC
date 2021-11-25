@@ -166,9 +166,10 @@ public final class SymbolTable {
     final EmbeddedCode code = EmbeddedCode.create();
 
     final List<Symbol> visible = SymbolTable.visible(symbolTable, Type.intType(), true);
+
     for (final Symbol definedVariable : visible) {
-      code.print("print(" + definedVariable.name + ");");
       code.newline();
+      code.print("print(" + definedVariable.name + ");");
     }
 
     return code;

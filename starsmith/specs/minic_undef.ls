@@ -6,15 +6,12 @@ use Util;
 class Program {
 
   program ("
-      #{(Util:helperFunctions)}\n\n
       ${decls : OptionalGlobalDeclarationList}
       ${main : MainDeclaration}") {
-    loc div_symbol =
-        (Symbol:create "div" (Type:functionType (Type:intType) (Type:intType) (Type:intType)) this);
     loc print_symbol =
         (Symbol:create "print" (Type:functionType (Type:voidType) (Type:intType)) this);
 
-    decls.symbols_before = (SymbolTable:predefined .div_symbol .print_symbol);
+    decls.symbols_before = (SymbolTable:predefined .print_symbol);
     main.symbols_before = decls.symbols_after;
   }
 
@@ -104,8 +101,7 @@ class FunctionDeclaration {
   func_decl ("
       ${return_type : ReturnType} ${name : DefIdentifier}
       (${params : OptionalParameterList}) {\+
-        ${stmts : StatementList}\n
-        ${return : ReturnStatement}\-
+        ${stmts : StatementList}\-
       }") {
     loc function_symbol = (Symbol:create name.name params.function_type_after this);
 
@@ -117,9 +113,6 @@ class FunctionDeclaration {
     # TODO should we allow recursive calls?
     stmts.symbols_before = (SymbolTable:enterScope params.symbols_after);
     stmts.return_type = return_type.type;
-
-    return.symbols_before = stmts.symbols_after;
-    return.return_type = return_type.type;
 
     this.symbols_after = (SymbolTable:define this.symbols_before .function_symbol);
   }
@@ -426,8 +419,7 @@ class MulExpression {
 
 }
 
-# divisions require a helper function to rule out the undefined behavior of divisions by zero
-class MulOp("*");
+class MulOp("*|/");
 
 @copy
 class Factor {
@@ -451,7 +443,7 @@ class Factor {
   @weight(12)
   var ("${var : UseIdentifier}") {
     this.types_match = true;
-    var.only_defined = true;
+    var.only_defined = false;
   }
 
   @weight(4)
@@ -530,17 +522,13 @@ class MainDeclaration {
   main ("
       int main() {\+
         ${stmts : StatementList}
-        #{(SymbolTable:printDefined stmts.symbols_after)}\n
-        ${return : ReturnStatement}\-
+        #{(SymbolTable:printDefined stmts.symbols_after)}\-
       }") {
     loc function_symbol = (Symbol:create "main" (Type:functionType (Type:intType)) this);
 
     # TODO should we allow recursive calls?
     stmts.symbols_before = (SymbolTable:enterScope this.symbols_before);
     stmts.return_type = (Type:intType);
-
-    return.symbols_before = stmts.symbols_after;
-    return.return_type = (Type:intType);
 
     this.symbols_after = (SymbolTable:define this.symbols_before .function_symbol);
   }
