@@ -13,6 +13,7 @@ public final class PrettyPrinter implements ASTVisitor<SafeWriter, Void> {
   // ===============================================================================================
 
   private int currentIndentation;
+  private boolean globalDeclaration;
 
   private PrettyPrinter() {
     this.currentIndentation = 0;
@@ -50,6 +51,7 @@ public final class PrettyPrinter implements ASTVisitor<SafeWriter, Void> {
         writer.write("\n");
       }
 
+      this.globalDeclaration = true;
       declaration.accept(this, writer);
     }
 
@@ -66,11 +68,18 @@ public final class PrettyPrinter implements ASTVisitor<SafeWriter, Void> {
     final Identifier name = variableDeclaration.getName();
     name.accept(this, writer);
 
+    if (this.globalDeclaration) {
+      writer.write(";");
+    }
+
     return null;
   }
 
   @Override
   public final Void visit(final FunctionDeclaration functionDeclaration, final SafeWriter writer) {
+    final boolean wasGlobalDeclaration = this.globalDeclaration;
+    this.globalDeclaration = false;
+
     final TypeName returnType = functionDeclaration.getReturnType();
     returnType.accept(this, writer);
 
@@ -99,6 +108,7 @@ public final class PrettyPrinter implements ASTVisitor<SafeWriter, Void> {
 
     writer.write("\n");
 
+    this.globalDeclaration = wasGlobalDeclaration;
     return null;
   }
 
