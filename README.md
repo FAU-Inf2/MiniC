@@ -100,10 +100,9 @@ Note that the *MiniC* interpreter can check if it encounters undefined behavior 
 
 ## Running the MiniC Interpreter
 
-Use the `minic.sh` script in the root directory to run the *MiniC* interpreter. It supports the
-following command line options:
+Use the `minic.sh` script in the root directory to run the *MiniC* interpreter. Besides the path
+to the input program (mandatory), it supports the following command line options:
 
-- `--in <file name>` (mandatory): Specifies the path to the input program.
 - `--lazyLexer`: By default, the lexer works in an eager fashion (i.e., the lexer first lexes the
   *complete* input program before the parser begins its work). If the `--lazyLexer` command line
   option is set, the lexer works in a lazy fashion instead (i.e., lexing and parsing are interwoven
