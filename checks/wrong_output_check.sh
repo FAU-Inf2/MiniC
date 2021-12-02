@@ -25,7 +25,7 @@ if [ ! -f "$INPUT_PROGRAM" ] ; then
 fi
 
 # check for undefined behavior
-timeout "$TIMEOUT" "$MINIC" --in "$INPUT_PROGRAM" --checkUndef 2> /dev/null > /dev/null
+timeout "$TIMEOUT" "$MINIC" "$INPUT_PROGRAM" --checkUndef 2> /dev/null > /dev/null
 exit_code="$?"
 
 if [ "$exit_code" -ne 0 ] ; then
@@ -47,7 +47,7 @@ fi
 # reference implementation
 reference_output=$(\
   trap "" PIPE ; \
-  timeout "$TIMEOUT" "$MINIC" --in "$INPUT_PROGRAM" --interpret 2> /dev/null | \
+  timeout "$TIMEOUT" "$MINIC" "$INPUT_PROGRAM" --interpret 2> /dev/null | \
     head -c $((MAX_SIZE + 1)) ; \
   exit ${PIPESTATUS[0]})
 
@@ -75,7 +75,7 @@ fi
 # implementation under test
 test_output=$(\
   trap "" PIPE ; \
-  timeout "$TIMEOUT" "$MINIC" --in "$INPUT_PROGRAM" --interpret "$@" 2> /dev/null | \
+  timeout "$TIMEOUT" "$MINIC" "$INPUT_PROGRAM" --interpret "$@" 2> /dev/null | \
     head -c $((MAX_SIZE + 1)) ; \
   exit ${PIPESTATUS[0]})
 
