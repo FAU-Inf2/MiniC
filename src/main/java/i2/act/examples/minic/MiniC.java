@@ -25,8 +25,6 @@ public final class MiniC {
 
   private static final ProgramArgumentsParser argumentsParser;
 
-  private static final String OPTION_INPUT_FILE = "--in";
-
   private static final String OPTION_LAZY_LEXER = "--lazyLexer";
 
   private static final String OPTION_PRETTY_PRINT = "--prettyPrint";
@@ -46,9 +44,7 @@ public final class MiniC {
   private static final String OPTION_ALL_BUGS = "--allBugs";
 
   static {
-    argumentsParser = new ProgramArgumentsParser();
-
-    argumentsParser.addOption(OPTION_INPUT_FILE, true, true, "<path to input file>");
+    argumentsParser = new ProgramArgumentsParser("<path to input file>");
 
     argumentsParser.addOption(OPTION_LAZY_LEXER, false);
 
@@ -80,7 +76,14 @@ public final class MiniC {
 
     assert (arguments != null);
 
-    final String inputFileName = arguments.getOption(OPTION_INPUT_FILE);
+    if (arguments.numberOfPositionalArguments() != 1) {
+      abort(String.format(
+          "[!] expected exactly one input path, but %d were given",
+          arguments.numberOfPositionalArguments()));
+    }
+
+    assert (arguments.numberOfPositionalArguments() == 1);
+    final String inputFileName = arguments.getPositionalArguments().get(0);
     final String input = FileUtil.readFile(inputFileName);
 
     enableBugs(arguments);
