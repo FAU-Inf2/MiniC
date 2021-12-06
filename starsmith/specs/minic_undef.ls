@@ -272,6 +272,7 @@ class Block {
 
   block ("{\+${stmts : StatementList}${return : OptionalReturnStatement}\-}") {
     stmts.symbols_before = (SymbolTable:enterScope this.symbols_before);
+    return.symbols_before = stmts.symbols_after;
     return.return_allowed = this.is_conditional_block;
     this.symbols_at_end = stmts.symbols_after;
   }
